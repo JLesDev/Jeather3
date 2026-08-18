@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Jonty</title>
+<style>
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-family: Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 0;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px 48px;
+  flex: 1 1 100%;
+}
+
+.preview {
+  flex: 0 0 0%;
+  width: 0%;
+  overflow: hidden;
+  border-left: none;
+  background-color: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wrapper.iframe-enabled .content {
+  flex: 1 1 50%;
+}
+
+.wrapper.iframe-enabled .preview {
+  flex: 1 1 50%;
+  width: auto;
+  border-left: 1px solid #333333;
+}
+
+.preview iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: none;
+}
+
+.preview iframe.active {
+  display: block;
+}
+
+.header {
+  position: relative;
+  overflow: hidden;
+  font-size: 96px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-align: left;
+  line-height: 1;
+  z-index: 0;
+  cursor: default;
+}
+
+.header span {
+  position: relative;
+  z-index: 2;
+}
+
+.links {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.link {
+  position: relative;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-decoration: none;
+  color: #ffffff;
+  padding: 10px 24px;
+  width: 100%;
+  text-align: left;
+  overflow: hidden;
+  background-color: transparent;
+  z-index: 0;
+}
+
+.link span {
+  position: relative;
+  z-index: 2;
+}
+
+.header::before,
+.link::before,
+.footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  transition: left 0.35s ease;
+}
+
+.header:hover::before,
+.link:hover::before,
+.link:focus::before,
+.footer:hover::before {
+  left: 0;
+}
+
+.header::before {
+  background-color: #ff2ec4;
+}
+
+.header:hover span {
+  color: #000000;
+}
+
+.link.mihoke {
+  --sweep: #a7c7f7;
+}
+
+.link.jeather {
+  --sweep: #ff8c1a;
+}
+
+.link.jtrain {
+  --sweep: #ffe600;
+}
+
+.link.jooty {
+  --sweep: #b5e8c5;
+}
+
+.link::before {
+  background-color: var(--sweep);
+}
+
+.link:hover span {
+  color: #000000;
+}
+
+.footer {
+  position: relative;
+  overflow: hidden;
+  margin-top: 60px;
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: #777777;
+  text-transform: uppercase;
+  z-index: 0;
+  cursor: default;
+}
+
+.footer span {
+  position: relative;
+  z-index: 2;
+}
+
+.footer::before {
+  background-color: #ff2ec4;
+}
+
+.footer:hover span {
+  color: #000000;
+}
+
+@media (max-width: 600px) {
+  .header {
+    font-size: 56px;
+  }
+
+  .link {
+    font-size: 18px;
+  }
+
+  .wrapper {
+    flex-direction: column;
+  }
+
+  .content {
+    padding: 24px;
+  }
+
+  .wrapper.iframe-enabled .preview {
+    border-left: none;
+    border-top: 1px solid #333333;
+    height: 60vh;
+    width: 100%;
+  }
+}
+
+.header::selection {
+  background-color: #ff2ec4;
+  color: #000000;
+}
+
+.link.mihoke span::selection {
+  background-color: #a7c7f7;
+  color: #000000;
+}
+
+.link.jeather span::selection {
+  background-color: #ff8c1a;
+  color: #000000;
+}
+
+.link.jtrain span::selection {
+  background-color: #ffe600;
+  color: #000000;
+}
+
+.link.jooty span::selection {
+  background-color: #b5e8c5;
+  color: #000000;
+}
+
+.footer::selection {
+  background-color: #ff2ec4;
+  color: #000000;
+}
+
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <div class="content">
+
+    <div class="header"><span>JONTY</span></div>
+
+    <div class="links" id="links">
+      <a class="link mihoke" href="#" data-name="MIHOKE" data-url="https://jlesdev.github.io/Mihoke/minesweeper.html"><span>MIHOKE</span></a>
+      <a class="link jeather" href="#" data-name="JEATHER" data-url="https://jlesdev.github.io/Jeather2/index.html"><span>JEATHER</span></a>
+      <a class="link jtrain" href="#" data-name="J-TRAIN" data-url="https://jlesdev.github.io/J-Train/index.html"><span>J-TRAIN</span></a>
+      <a class="link jooty" href="#" data-name="JOOTY" data-url="https://jlesdev.github.io/Jooty/index.html"><span>JOOTY</span></a>
+    </div>
+
+    <div class="footer"><span>Developer on Wurundjeri land</span></div>
+
+  </div>
+
+  <div class="preview" id="preview">
+    <iframe id="frame"></iframe>
+  </div>
+
+</div>
+
+<script>
+
+var wrapper = document.querySelector(".wrapper");
+var links = document.querySelectorAll(".link");
+var frame = document.getElementById("frame");
+var iframeEnabled = false;
+
+document.addEventListener("keydown", function (e) {
+  if (e.key === "k" || e.key === "K") {
+    iframeEnabled = !iframeEnabled;
+    wrapper.classList.toggle("iframe-enabled", iframeEnabled);
+  }
+});
+
+links.forEach(function (link) {
+  link.addEventListener("click", function (e) {
+    e.preventDefault();
+    if (!iframeEnabled) {
+      return;
+    }
+    var url = link.getAttribute("data-url");
+    frame.src = url;
+    frame.classList.add("active");
+  });
+});
+
+</script>
+
+</body>
+</html>
