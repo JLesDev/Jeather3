@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>Jonty</title>
+<title>Jeather3</title>
 <style>
 
 * {
@@ -40,45 +40,23 @@ body {
   flex-direction: column;
   justify-content: center;
   padding: 24px 48px;
-  flex: 1 1 100%;
+  flex: 1 1 50%;
 }
 
 .preview {
-  flex: 0 0 0%;
-  width: 0%;
-  overflow: hidden;
-  border-left: none;
+  flex: 1 1 50%;
+  border-left: 1px solid #333333;
   background-color: #111111;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.wrapper.iframe-enabled .content {
-  flex: 1 1 50%;
-}
-
-.wrapper.iframe-enabled .preview {
-  flex: 1 1 50%;
-  width: auto;
-  border-left: 1px solid #333333;
-}
-
-.preview iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: none;
-}
-
-.preview iframe.active {
-  display: block;
+  padding: 48px;
 }
 
 .header {
   position: relative;
   overflow: hidden;
-  font-size: 96px;
+  font-size: 88px;
   font-weight: 700;
   letter-spacing: 2px;
   text-align: left;
@@ -115,6 +93,9 @@ body {
   overflow: hidden;
   background-color: transparent;
   z-index: 0;
+  border: none;
+  font-family: Helvetica, Arial, sans-serif;
+  cursor: pointer;
 }
 
 .link span {
@@ -137,7 +118,7 @@ body {
 
 .header:hover::before,
 .link:hover::before,
-.link:focus::before,
+.link.active::before,
 .footer:hover::before {
   left: 0;
 }
@@ -150,19 +131,19 @@ body {
   color: #000000;
 }
 
-.link.mihoke {
+.link.melbourne {
   --sweep: #a7c7f7;
 }
 
-.link.jeather {
+.link.adelaide {
   --sweep: #ff8c1a;
 }
 
-.link.jtrain {
+.link.sydney {
   --sweep: #ffe600;
 }
 
-.link.jooty {
+.link.brisbane {
   --sweep: #b5e8c5;
 }
 
@@ -170,7 +151,8 @@ body {
   background-color: var(--sweep);
 }
 
-.link:hover span {
+.link:hover span,
+.link.active span {
   color: #000000;
 }
 
@@ -199,9 +181,151 @@ body {
   color: #000000;
 }
 
+.weather {
+  width: 100%;
+  max-width: 420px;
+}
+
+.weather-city {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.weather-temp {
+  margin-top: 24px;
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.weather-feels {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #999999;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.weather-stats {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.weather-stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #2a2a2a;
+  padding-bottom: 10px;
+}
+
+.weather-stat-label {
+  color: #777777;
+  text-transform: uppercase;
+}
+
+.weather-chart {
+  margin-top: 32px;
+}
+
+.weather-chart svg {
+  width: 100%;
+  height: 100px;
+  display: block;
+}
+
+.weather-quote {
+  margin-top: 32px;
+  font-size: 13px;
+  color: #888888;
+  line-height: 1.5;
+  border-left: 2px solid #333333;
+  padding-left: 12px;
+}
+
+.weather-placeholder {
+  color: #444444;
+  font-size: 14px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.weather-error {
+  width: 100%;
+  max-width: 420px;
+}
+
+.weather-error-title {
+  font-size: 40px;
+  font-weight: 700;
+  color: #ff5c5c;
+  letter-spacing: 1px;
+}
+
+.weather-error-last {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #777777;
+  letter-spacing: 1px;
+}
+
+.notify-buttons {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notify-button {
+  position: relative;
+  overflow: hidden;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #ffffff;
+  background-color: transparent;
+  border: 1px solid #333333;
+  padding: 14px 20px;
+  text-align: left;
+  cursor: pointer;
+  font-family: Helvetica, Arial, sans-serif;
+  z-index: 0;
+}
+
+.notify-button span {
+  position: relative;
+  z-index: 2;
+}
+
+.notify-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: #ff5c5c;
+  z-index: 1;
+  transition: left 0.35s ease;
+}
+
+.notify-button:hover::before,
+.notify-button.sent::before {
+  left: 0;
+}
+
+.notify-button:hover span,
+.notify-button.sent span {
+  color: #000000;
+}
+
 @media (max-width: 600px) {
   .header {
-    font-size: 56px;
+    font-size: 48px;
   }
 
   .link {
@@ -213,45 +337,21 @@ body {
   }
 
   .content {
+    flex: none;
     padding: 24px;
   }
 
-  .wrapper.iframe-enabled .preview {
+  .preview {
+    flex: none;
     border-left: none;
     border-top: 1px solid #333333;
-    height: 60vh;
-    width: 100%;
+    min-height: 60vh;
+    padding: 24px;
   }
-}
 
-.header::selection {
-  background-color: #ff2ec4;
-  color: #000000;
-}
-
-.link.mihoke span::selection {
-  background-color: #a7c7f7;
-  color: #000000;
-}
-
-.link.jeather span::selection {
-  background-color: #ff8c1a;
-  color: #000000;
-}
-
-.link.jtrain span::selection {
-  background-color: #ffe600;
-  color: #000000;
-}
-
-.link.jooty span::selection {
-  background-color: #b5e8c5;
-  color: #000000;
-}
-
-.footer::selection {
-  background-color: #ff2ec4;
-  color: #000000;
+  .weather-temp {
+    font-size: 56px;
+  }
 }
 
 </style>
@@ -262,48 +362,156 @@ body {
 
   <div class="content">
 
-    <div class="header"><span>JONTY</span></div>
+    <div class="header"><span>JEATHER3</span></div>
 
     <div class="links" id="links">
-      <a class="link mihoke" href="#" data-name="MIHOKE" data-url="https://jlesdev.github.io/Mihoke/minesweeper.html"><span>MIHOKE</span></a>
-      <a class="link jeather" href="#" data-name="JEATHER" data-url="https://jlesdev.github.io/Jeather2/index.html"><span>JEATHER</span></a>
-      <a class="link jtrain" href="#" data-name="J-TRAIN" data-url="https://jlesdev.github.io/J-Train/index.html"><span>J-TRAIN</span></a>
-      <a class="link jooty" href="#" data-name="JOOTY" data-url="https://jlesdev.github.io/Jooty/index.html"><span>JOOTY</span></a>
+      <button class="link melbourne" data-city="Melbourne"><span>MELBOURNE</span></button>
+      <button class="link adelaide" data-city="Adelaide"><span>ADELAIDE</span></button>
+      <button class="link sydney" data-city="Sydney"><span>SYDNEY</span></button>
+      <button class="link brisbane" data-city="Brisbane"><span>BRISBANE</span></button>
     </div>
 
-    <div class="footer"><span>Developer on Wurundjeri land</span></div>
+    <div class="footer"><span>Data via the Bureau of Meteorology</span></div>
 
   </div>
 
   <div class="preview" id="preview">
-    <iframe id="frame"></iframe>
+    <div class="weather-placeholder" id="placeholder">SELECT A CITY</div>
   </div>
 
 </div>
 
 <script>
 
-var wrapper = document.querySelector(".wrapper");
-var links = document.querySelectorAll(".link");
-var frame = document.getElementById("frame");
-var iframeEnabled = false;
+var quotes = [
+"If you're offered a seat on a rocket ship, don't ask what seat. Just get on. Sheryl Sandberg",
+"First, have a definite, clear practical ideal; a goal, an objective. Aristotle",
+"If the wind will not serve, take to the oars. Latin Proverb",
+"You can't fall if you don't climb. But there's no joy in living your whole life on the ground. Unknown",
+"We must believe that we are gifted for something. Marie Curie",
+"Too many of us are not living our dreams because we are living our fears. Les Brown",
+"Challenges are what make life interesting and overcoming them is what makes life meaningful. Joshua J. Marine",
+"If you want to lift yourself up, lift up someone else. Booker T. Washington",
+"Knowing is not enough; we must apply. Being willing is not enough; we must do. Leonardo da Vinci",
+"Limitations live only in our minds. Jamie Paolinetti",
+"A person who never made a mistake never tried anything new. Albert Einstein",
+"The person who says it cannot be done should not interrupt the person who is doing it. Chinese Proverb",
+"There are no traffic jams along the extra mile. Roger Staubach",
+"It is never too late to be what you might have been. George Eliot",
+"You become what you believe. Oprah Winfrey",
+"I would rather die of passion than of boredom. Vincent van Gogh",
+"It does not matter how slowly you go as long as you do not stop. Confucius",
+"Dream big and dare to fail. Norman Vaughan",
+"Do what you can, where you are, with what you have. Teddy Roosevelt",
+"Dreaming, after all, is a form of planning. Gloria Steinem",
+"Remember no one can make you feel inferior without your consent. Eleanor Roosevelt",
+"Change your thoughts and you change your world. Norman Vincent Peale",
+"The only way to do great work is to love what you do. Steve Jobs",
+"If you can dream it, you can achieve it. Zig Ziglar"
+];
 
-document.addEventListener("keydown", function (e) {
-  if (e.key === "k" || e.key === "K") {
-    iframeEnabled = !iframeEnabled;
-    wrapper.classList.toggle("iframe-enabled", iframeEnabled);
-  }
-});
+var links = document.querySelectorAll(".link");
+var preview = document.getElementById("preview");
+
+function randomQuote() {
+  return quotes[Math.floor(Math.random() * quotes.length)];
+}
+
+function buildSparkline(hours) {
+  var temps = hours.map(function (h) { return h.temp; });
+  var min = Math.min.apply(null, temps);
+  var max = Math.max.apply(null, temps);
+  var range = max - min === 0 ? 1 : max - min;
+  var width = 400;
+  var height = 100;
+  var step = width / (temps.length - 1);
+  var points = temps.map(function (t, i) {
+    var x = i * step;
+    var y = height - ((t - min) / range) * (height - 20) - 10;
+    return x + "," + y;
+  }).join(" ");
+  return '<svg viewBox="0 0 ' + width + ' ' + height + '" preserveAspectRatio="none">' +
+    '<polyline points="' + points + '" fill="none" stroke="#ffffff" stroke-width="2"/>' +
+    '</svg>';
+}
+
+function renderWeather(city, current, hours) {
+  var html = '';
+  html += '<div class="weather">';
+  html += '<div class="weather-city">' + city.toUpperCase() + '</div>';
+  html += '<div class="weather-temp">' + Math.round(current.temp) + '&deg;C</div>';
+  html += '<div class="weather-feels">Feels like ' + Math.round(current.temp_feels_like) + '&deg;C</div>';
+  html += '<div class="weather-stats">';
+  html += '<div class="weather-stat"><span class="weather-stat-label">Humidity</span><span>' + current.relative_humidity + '%</span></div>';
+  html += '<div class="weather-stat"><span class="weather-stat-label">UV</span><span>' + current.uv + '</span></div>';
+  html += '<div class="weather-stat"><span class="weather-stat-label">Wind</span><span>' + current.wind.speed_kilometre + 'km/h ' + current.wind.direction + '</span></div>';
+  var rainAvg = ((current.rain.amount.min + current.rain.amount.max) / 2).toFixed(1);
+  html += '<div class="weather-stat"><span class="weather-stat-label">Rain</span><span>' + rainAvg + 'mm</span></div>';
+  html += '</div>';
+  html += '<div class="weather-chart">' + buildSparkline(hours) + '</div>';
+  html += '<div class="weather-quote">' + randomQuote() + '</div>';
+  html += '</div>';
+  preview.innerHTML = html;
+}
+
+function renderError(city) {
+  var html = '';
+  html += '<div class="weather-error">';
+  html += '<div class="weather-error-title">' + city + ' down.</div>';
+  html += '<div class="weather-error-last">Last known temp 17&deg;</div>';
+  html += '<div class="notify-buttons">';
+  html += '<button class="notify-button" data-target="BOM"><span>Notify BOM</span></button>';
+  html += '<button class="notify-button" data-target="JT"><span>Notify JT</span></button>';
+  html += '</div>';
+  html += '</div>';
+  preview.innerHTML = html;
+
+  var notifyButtons = preview.querySelectorAll(".notify-button");
+  notifyButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      button.classList.add("sent");
+      button.querySelector("span").textContent = "Notified";
+      button.disabled = true;
+    });
+  });
+}
+
+function renderLoading(city) {
+  preview.innerHTML = '<div class="weather-placeholder">LOADING ' + city.toUpperCase() + '</div>';
+}
+
+function fetchWeather(city) {
+  renderLoading(city);
+  var searchUrl = "https://api.weather.bom.gov.au/v1/locations?search=" + encodeURIComponent(city);
+  fetch(searchUrl)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (searchJson) {
+      var geohash = searchJson.data[0].geohash.slice(0, 6);
+      var forecastUrl = "https://api.weather.bom.gov.au/v1/locations/" + geohash + "/forecasts/hourly";
+      return fetch(forecastUrl);
+    })
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (json) {
+      var hours = json.data.slice(0, 24);
+      renderWeather(city, hours[0], hours);
+    })
+    .catch(function () {
+      renderError(city);
+    });
+}
 
 links.forEach(function (link) {
-  link.addEventListener("click", function (e) {
-    e.preventDefault();
-    if (!iframeEnabled) {
-      return;
-    }
-    var url = link.getAttribute("data-url");
-    frame.src = url;
-    frame.classList.add("active");
+  link.addEventListener("click", function () {
+    links.forEach(function (l) {
+      l.classList.remove("active");
+    });
+    link.classList.add("active");
+    var city = link.getAttribute("data-city");
+    fetchWeather(city);
   });
 });
 
