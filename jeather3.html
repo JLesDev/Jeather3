@@ -53,8 +53,15 @@ body {
   padding: 48px;
 }
 
+.preview *::selection {
+  background-color: var(--city-color, #ffffff);
+  color: #000000;
+}
+
 .header {
   position: relative;
+  display: inline-block;
+  width: fit-content;
   overflow: hidden;
   font-size: 88px;
   font-weight: 700;
@@ -80,6 +87,12 @@ body {
   max-width: 400px;
 }
 
+.link-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
 .link {
   position: relative;
   font-size: 22px;
@@ -101,6 +114,38 @@ body {
 .link span {
   position: relative;
   z-index: 2;
+}
+
+.fav-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 3;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.fav-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: #777777;
+  transition: fill 0.2s ease;
+}
+
+.fav-btn:hover svg {
+  fill: #ffffff;
+}
+
+.fav-btn.favorited svg {
+  fill: #ff2ec4;
 }
 
 .header::before,
@@ -136,11 +181,11 @@ body {
 }
 
 .link.adelaide {
-  --sweep: #ff8c1a;
+  --sweep: #ffb36b;
 }
 
 .link.sydney {
-  --sweep: #ffe600;
+  --sweep: #fff09a;
 }
 
 .link.brisbane {
@@ -156,8 +201,70 @@ body {
   color: #000000;
 }
 
+.nav-row {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  width: 100%;
+}
+
+.link.nav {
+  --sweep: #ff2ec4;
+  text-align: center;
+}
+
+.metro-button {
+  --sweep: #ff2ec4;
+  text-align: center;
+}
+
+.metro-button::before {
+  background-color: var(--sweep);
+}
+
+.metro-button:hover span,
+.metro-button.active span {
+  color: #000000;
+}
+
+.regional-button {
+  --sweep: #d6c2ff;
+  text-align: center;
+}
+
+.regional-button::before {
+  background-color: var(--sweep);
+}
+
+.regional-button:hover span,
+.regional-button.active span {
+  color: #000000;
+}
+
+.rural-button {
+  --sweep: #e6c280;
+  text-align: center;
+}
+
+.rural-button::before {
+  background-color: var(--sweep);
+}
+
+.rural-button:hover span,
+.rural-button.active span {
+  color: #000000;
+}
+
+#extras > .link-container > .metro-button,
+#extras > .link-container > .regional-button,
+#extras > .link-container > .rural-button {
+  text-align: left;
+}
+
 .footer {
   position: relative;
+  display: inline-block;
+  width: fit-content;
   overflow: hidden;
   margin-top: 60px;
   font-size: 12px;
@@ -192,17 +299,172 @@ body {
   letter-spacing: 1px;
 }
 
+/* Sentiment Tracker Styles & Animations */
+.sentiment-wrapper {
+  margin-top: 0px;
+  width: 100%;
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+
+.sentiment-container {
+  display: flex;
+  gap: 8px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.sentiment-container.fade-out {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+.sentiment-btn {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.sentiment-btn:hover {
+  opacity: 0.85;
+}
+
+.sentiment-btn:active {
+  transform: scale(0.95);
+}
+
+.sentiment-btn.great {
+  background-color: #9cb8f9;
+  color: #000000;
+}
+
+.sentiment-btn.good {
+  background-color: #b5e8c5;
+  color: #000000;
+}
+
+.sentiment-btn.bad {
+  background-color: #f3b8c8;
+  color: #000000;
+}
+
+/* Stacked Row Graph Styles */
+.sentiment-stacked-graph {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s;
+}
+
+.sentiment-stacked-graph.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stacked-track {
+  display: flex;
+  width: 100%;
+  height: 10px;
+  background-color: #222222;
+  overflow: hidden;
+}
+
+.stacked-segment {
+  height: 100%;
+  width: 0%;
+  transition: width 0.6s cubic-bezier(0.1, 1, 0.1, 1);
+}
+
+.stacked-segment.great {
+  background-color: #9cb8f9;
+}
+
+.stacked-segment.good {
+  background-color: #b5e8c5;
+}
+
+.stacked-segment.bad {
+  background-color: #f3b8c8;
+}
+
+.stacked-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #888888;
+}
+
+.legend-item span {
+  color: #ffffff;
+  font-weight: 700;
+}
+
 .weather-temp {
-  margin-top: 24px;
+  margin-top: 16px;
   font-size: 72px;
   font-weight: 700;
   line-height: 1;
 }
 
+.weather-highlow {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  display: flex;
+  gap: 16px;
+}
+
+.weather-highlow span {
+  position: relative;
+  display: inline-block;
+  padding: 2px 6px;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.weather-highlow span::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--city-color, #a7c7f7);
+  opacity: 0.35;
+  z-index: 1;
+}
+
+.weather-highlow span b {
+  position: relative;
+  z-index: 2;
+  color: #ffffff;
+  font-weight: 700;
+}
+
 .weather-feels {
   margin-top: 8px;
   font-size: 14px;
-  color: #999999;
+  color: #ffffff;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.weather-diff {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #aaaaaa;
   letter-spacing: 1px;
   text-transform: uppercase;
 }
@@ -219,12 +481,11 @@ body {
   justify-content: space-between;
   font-size: 14px;
   letter-spacing: 1px;
-  border-bottom: 1px solid #2a2a2a;
   padding-bottom: 10px;
 }
 
 .weather-stat-label {
-  color: #777777;
+  color: #ffffff;
   text-transform: uppercase;
 }
 
@@ -240,11 +501,10 @@ body {
 
 .weather-quote {
   margin-top: 32px;
-  font-size: 13px;
-  color: #888888;
+  font-size: 14px;
+  color: #ffffff;
+  letter-spacing: 1px;
   line-height: 1.5;
-  border-left: 2px solid #333333;
-  padding-left: 12px;
 }
 
 .weather-placeholder {
@@ -269,7 +529,7 @@ body {
 .weather-error-last {
   margin-top: 8px;
   font-size: 13px;
-  color: #777777;
+  color: #ffffff;
   letter-spacing: 1px;
 }
 
@@ -334,11 +594,15 @@ body {
 
   .wrapper {
     flex-direction: column;
+    min-height: 100vh;
   }
 
   .content {
-    flex: none;
+    flex: 1 1 100%;
+    min-height: 100vh;
+    justify-content: space-between;
     padding: 24px;
+    width: 100%;
   }
 
   .preview {
@@ -362,32 +626,30 @@ body {
 
   <div class="content">
 
-    <div class="header"><span>JEATHER3</span></div>
+    <div class="header"><span>Jeather3</span></div>
 
-    <div class="links" id="links">
-      <button class="link melbourne" data-city="Melbourne"><span>MELBOURNE</span></button>
-      <button class="link adelaide" data-city="Adelaide"><span>ADELAIDE</span></button>
-      <button class="link sydney" data-city="Sydney"><span>SYDNEY</span></button>
-      <button class="link brisbane" data-city="Brisbane"><span>BRISBANE</span></button>
-    </div>
+    <div class="links" id="links"></div>
 
-    <div class="footer"><span>Data via the Bureau of Meteorology</span></div>
+    <div class="links" id="extras"></div>
+
+    <div class="footer"><span>data by bom</span></div>
 
   </div>
 
   <div class="preview" id="preview">
-    <div class="weather-placeholder" id="placeholder">SELECT A CITY</div>
   </div>
 
 </div>
 
 <script>
 
+var heartSvgString = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+
 var quotes = [
 "If you're offered a seat on a rocket ship, don't ask what seat. Just get on. Sheryl Sandberg",
 "First, have a definite, clear practical ideal; a goal, an objective. Aristotle",
 "If the wind will not serve, take to the oars. Latin Proverb",
-"You can't fall if you don't climb. But there's no joy in living your whole life on the ground. Unknown",
+"You can't fall if you don't climb. But there's no joy in living your whole life on. the ground. Unknown",
 "We must believe that we are gifted for something. Marie Curie",
 "Too many of us are not living our dreams because we are living our fears. Les Brown",
 "Challenges are what make life interesting and overcoming them is what makes life meaningful. Joshua J. Marine",
@@ -410,7 +672,6 @@ var quotes = [
 "If you can dream it, you can achieve it. Zig Ziglar"
 ];
 
-var links = document.querySelectorAll(".link");
 var preview = document.getElementById("preview");
 
 function randomQuote() {
@@ -435,12 +696,105 @@ function buildSparkline(hours) {
     '</svg>';
 }
 
-function renderWeather(city, current, hours) {
+function getSentimentStorageKey(cityName) {
+  return "sentiment_" + cityName.toLowerCase().replace(/[^a-z]/g, "_") + "_" + new Date().toISOString().slice(0, 10);
+}
+
+function getUserVoteKey(cityName) {
+  return "voted_" + cityName.toLowerCase().replace(/[^a-z]/g, "_") + "_" + new Date().toISOString().slice(0, 10);
+}
+
+function getSentimentData(cityName) {
+  try {
+    var data = localStorage.getItem(getSentimentStorageKey(cityName));
+    if (data) return JSON.parse(data);
+  } catch (e) {}
+  return { great: 0, good: 0, bad: 0 };
+}
+
+function saveSentimentData(cityName, counts) {
+  try {
+    localStorage.setItem(getSentimentStorageKey(cityName), JSON.stringify(counts));
+  } catch (e) {}
+}
+
+function hasUserVoted(cityName) {
+  try {
+    return localStorage.getItem(getUserVoteKey(cityName)) === "true";
+  } catch (e) {
+    return false;
+  }
+}
+
+function setUserVoted(cityName) {
+  try {
+    localStorage.setItem(getUserVoteKey(cityName), "true";
+  } catch (e) {}
+}
+
+function getStackedGraphHTML(stats, isAlreadyVoted) {
+  var total = stats.great + stats.good + stats.bad;
+  var greatPct = total === 0 ? 0 : Math.round((stats.great / total) * 100);
+  var goodPct = total === 0 ? 0 : Math.round((stats.good / total) * 100);
+  var badPct = total === 0 ? 0 : (100 - greatPct - goodPct);
+
+  var html = '';
+  html += '<div class="sentiment-stacked-graph ' + (isAlreadyVoted ? 'visible' : '') + '" id="sentiment-graph-' + cityClass(window.currentActiveCity || '') + '">';
+  html += '<div class="stacked-track">';
+  html += '<div class="stacked-segment great" style="width: ' + (isAlreadyVoted ? greatPct : 0) + '%;"></div>';
+  html += '<div class="stacked-segment good" style="width: ' + (isAlreadyVoted ? goodPct : 0) + '%;"></div>';
+  html += '<div class="stacked-segment bad" style="width: ' + (isAlreadyVoted ? badPct : 0) + '%;"></div>';
+  html += '</div>';
+  html += '<div class="stacked-legend">';
+  html += '<div class="legend-item">Great: <span>' + greatPct + '%</span></div>';
+  html += '<div class="legend-item">Good: <span>' + goodPct + '%</span></div>';
+  html += '<div class="legend-item">Bad: <span>' + badPct + '%</span></div>';
+  html += '</div>';
+  html += '</div>';
+  return html;
+}
+
+window.currentActiveCity = '';
+
+function renderWeather(city, current, hours, dailyMin, dailyMax, climate) {
+  window.currentActiveCity = city;
   var html = '';
   html += '<div class="weather">';
   html += '<div class="weather-city">' + city.toUpperCase() + '</div>';
+  
+  var voted = hasUserVoted(city);
+  var stats = getSentimentData(city);
+
+  html += '<div class="sentiment-wrapper">';
+  html += '<div class="sentiment-container ' + (voted ? 'fade-out' : '') + '" id="sentiment-interactive-' + cityClass(city) + '">';
+  html += '<button class="sentiment-btn great" onclick="handleVote(\'' + city + '\', \'great\')">Great</button>';
+  html += '<button class="sentiment-btn good" onclick="handleVote(\'' + city + '\', \'good\')">Good</button>';
+  html += '<button class="sentiment-btn bad" onclick="handleVote(\'' + city + '\', \'bad\')">Bad</button>';
+  html += '</div>';
+
+  html += getStackedGraphHTML(stats, voted);
+  html += '</div>';
+
   html += '<div class="weather-temp">' + Math.round(current.temp) + '&deg;C</div>';
-  html += '<div class="weather-feels">Feels like ' + Math.round(current.temp_feels_like) + '&deg;C</div>';
+  if (dailyMin !== null && dailyMin !== undefined && dailyMax !== null && dailyMax !== undefined) {
+    html += '<div class="weather-highlow">';
+    html += '<span><b>Max: ' + Math.round(dailyMax) + '&deg;C</b></span>';
+    html += '<span><b>Min: ' + Math.round(dailyMin) + '&deg;C</b></span>';
+    html += '</div>';
+  }
+  html += '<div class="weather-feels">Jonty would feel like ' + Math.round(current.temp_feels_like + 2) + '&deg;C</div>';
+  
+  if (climate && climate.max_mean !== undefined && dailyMax !== null && dailyMax !== undefined) {
+    var diff = Math.round(dailyMax - climate.max_mean);
+    if (diff > 0) {
+      html += '<div class="weather-diff">Today is ' + diff + '&deg; warmer than average</div>';
+    } else if (diff < 0) {
+      html += '<div class="weather-diff">Today is ' + Math.abs(diff) + '&deg; cooler than average</div>';
+    } else {
+      html += '<div class="weather-diff">Today is right on average</div>';
+    }
+  }
+
   html += '<div class="weather-stats">';
   html += '<div class="weather-stat"><span class="weather-stat-label">Humidity</span><span>' + current.relative_humidity + '%</span></div>';
   html += '<div class="weather-stat"><span class="weather-stat-label">UV</span><span>' + current.uv + '</span></div>';
@@ -454,7 +808,48 @@ function renderWeather(city, current, hours) {
   preview.innerHTML = html;
 }
 
+window.handleVote = function(city, type) {
+  if (hasUserVoted(city)) return;
+  
+  setUserVoted(city);
+  var stats = getSentimentData(city);
+  if (type === 'great') stats.great++;
+  if (type === 'good') stats.good++;
+  if (type === 'bad') stats.bad++;
+  saveSentimentData(city, stats);
+
+  var interactiveEl = document.getElementById('sentiment-interactive-' + cityClass(city));
+  var graphEl = document.getElementById('sentiment-graph-' + cityClass(city));
+
+  if (interactiveEl) {
+    interactiveEl.classList.add('fade-out');
+  }
+
+  if (graphEl) {
+    var total = stats.great + stats.good + stats.bad;
+    var greatPct = total === 0 ? 0 : Math.round((stats.great / total) * 100);
+    var goodPct = total === 0 ? 0 : Math.round((stats.good / total) * 100);
+    var badPct = total === 0 ? 0 : (100 - greatPct - goodPct);
+
+    graphEl.classList.add('visible');
+    var segs = graphEl.getElementsByClassName('stacked-segment');
+    if (segs.length >= 3) {
+      segs[0].style.width = greatPct + '%';
+      segs[1].style.width = goodPct + '%';
+      segs[2].style.width = badPct + '%';
+    }
+
+    var legends = graphEl.getElementsByClassName('legend-item');
+    if (legends.length >= 3) {
+      legends[0].innerHTML = 'Great: <span>' + greatPct + '%</span>';
+      legends[1].innerHTML = 'Good: <span>' + goodPct + '%</span>';
+      legends[2].innerHTML = 'Bad: <span>' + badPct + '%</span>';
+    }
+  }
+};
+
 function renderError(city) {
+  window.currentActiveCity = city;
   var html = '';
   html += '<div class="weather-error">';
   html += '<div class="weather-error-title">' + city + ' down.</div>';
@@ -489,31 +884,506 @@ function fetchWeather(city) {
     })
     .then(function (searchJson) {
       var geohash = searchJson.data[0].geohash.slice(0, 6);
-      var forecastUrl = "https://api.weather.bom.gov.au/v1/locations/" + geohash + "/forecasts/hourly";
-      return fetch(forecastUrl);
+      var hourlyUrl = "https://api.weather.bom.gov.au/v1/locations/" + geohash + "/forecasts/hourly";
+      var dailyUrl = "https://api.weather.bom.gov.au/v1/locations/" + geohash + "/forecasts/daily";
+      var climateUrl = "https://api.weather.bom.gov.au/v1/locations/" + geohash + "/climate-averages";
+      
+      return Promise.all([
+        fetch(hourlyUrl).then(function(res) { return res.json(); }),
+        fetch(dailyUrl).then(function(res) { return res.json(); }),
+        fetch(climateUrl).then(function(res) { return res.json(); }).catch(function() { return null; })
+      ]);
     })
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (json) {
-      var hours = json.data.slice(0, 24);
-      renderWeather(city, hours[0], hours);
+    .then(function (responses) {
+      var hourlyJson = responses[0];
+      var dailyJson = responses[1];
+      var climateJson = responses[2];
+      
+      var hours = hourlyJson.data.slice(0, 24);
+      var todayDaily = dailyJson.data[0];
+      var dailyMin = (todayDaily && todayDaily.temp_min !== null && todayDaily.temp_min !== undefined) ? todayDaily.temp_min : null;
+      var dailyMax = (todayDaily && todayDaily.temp_max !== null && todayDaily.temp_max !== undefined) ? todayDaily.temp_max : null;
+
+      if ((dailyMin === null || dailyMax === null) && hours.length > 0) {
+        var hourTemps = hours.map(function(h) { return h.temp; });
+        if (dailyMin === null) dailyMin = Math.min.apply(null, hourTemps);
+        if (dailyMax === null) dailyMax = Math.max.apply(null, hourTemps);
+      }
+
+      var currentMonth = new Date().getMonth() + 1;
+      var climate = null;
+      if (climateJson && climateJson.data) {
+        climate = climateJson.data.find(function(c) { return c.month === currentMonth; });
+      }
+
+      renderWeather(city, hours[0], hours, dailyMin, dailyMax, climate);
     })
     .catch(function () {
       renderError(city);
     });
 }
 
-links.forEach(function (link) {
-  link.addEventListener("click", function () {
-    links.forEach(function (l) {
-      l.classList.remove("active");
-    });
-    link.classList.add("active");
-    var city = link.getAttribute("data-city");
-    fetchWeather(city);
-  });
+var cityColors = {
+  Melbourne: "#a7c7f7",
+  Adelaide: "#ffb36b",
+  Sydney: "#fff09a",
+  Brisbane: "#b5e8c5",
+  Perth: "#c7b8ff",
+  "Gold Coast": "#ffb7d5",
+  Newcastle: "#a8e6e6",
+  Canberra: "#d6c2ff",
+  "Sunshine Coast": "#ffd1a9",
+  "Central Coast": "#b9d7ff",
+  Wollongong: "#f3b8c8",
+  Geelong: "#bde7c5",
+  Hobart: "#c9c4ff",
+  Townsville: "#ffd6a5",
+  Cairns: "#a9e5d1",
+  Toowoomba: "#e4c1f9",
+  Darwin: "#ffb5a7",
+  Ballarat: "#c5d8ff",
+  Bendigo: "#f6d6a8",
+  "Albury-Wodonga": "#d2f0b5",
+  Launceston: "#c4d9e8",
+  Mackay: "#f5c2d7",
+  Bunbury: "#b8e0d2",
+  Rockhampton: "#e8c6ff"
+};
+
+var regionalCities = [
+  "Alice Springs", "Broome", "Broken Hill", "Mount Isa", 
+  "Kalgoorlie", "Mildura", "Shepparton", "Warrnambool", "Horsham", 
+  "Wangaratta", "Echuca", "Swan Hill", "Hamilton", "Portland", 
+  "Colac", "Ararat", "Stawell", "Bairnsdale", "Sale", 
+  "Traralgon", "Warragul", "Morwell", "Orange", 
+  "Bathurst", "Dubbo", "Tamworth", "Armidale", "Lismore", 
+  "Grafton", "Coffs Harbour", "Port Macquarie", "Taree", "Goulburn", 
+  "Queanbeyan", "Cooma", "Griffith", "Wagga Wagga", "Albury", "Busselton", "Geraldton"
+];
+
+var ruralCities = [
+  "Ceduna", "Coober Pedy", "Broome", "Burnie", "Exmouth", 
+  "Kununurra", "Halls Creek", "Tennant Creek", "Jabiru", "Nhulunbuy", 
+  "Normanton", "Cooktown", "Longreach", "Charleville", "Roma", 
+  "Emerald", "Cloncurry", "Innisfail", "Charters Towers", "Kingaroy", 
+  "Stanthorpe", "Lightning Ridge", "Bourke", "Cobar", "Hay", 
+  "Deniliquin", "Moree", "Narrabri", "Inverell", "Glen Innes", 
+  "Cooma", "Merimbula", "Bega", "Narooma", "Ulladulla", 
+  "St Helens", "Queenstown", "Smithton", "Strahan", "Ouyen"
+];
+
+var sweepPalette = Object.keys(cityColors).map(function (city) {
+  return cityColors[city];
 });
+
+function getFavorites() {
+  var match = document.cookie.match(new RegExp('(^| )favorites=([^;]+)'));
+  if (match) {
+    try {
+      return JSON.parse(decodeURIComponent(match[2]));
+    } catch (e) {
+      return [];
+    }
+  }
+  return [];
+}
+
+function saveFavorites(favorites) {
+  var expires = new Date();
+  expires.setFullYear(expires.getFullYear() + 1);
+  document.cookie = "favorites=" + encodeURIComponent(JSON.stringify(favorites)) + ";expires=" + expires.toUTCString() + ";path=/";
+}
+
+var allCities = [
+  "Melbourne",
+  "Adelaide",
+  "Sydney",
+  "Brisbane",
+  "Perth",
+  "Gold Coast",
+  "Newcastle",
+  "Canberra",
+  "Sunshine Coast",
+  "Central Coast",
+  "Wollongong",
+  "Geelong",
+  "Hobart",
+  "Townsville",
+  "Cairns",
+  "Toowoomba",
+  "Darwin",
+  "Ballarat",
+  "Bendigo",
+  "Albury-Wodonga",
+  "Launceston",
+  "Mackay",
+  "Bunbury",
+  "Rockhampton"
+];
+
+function getSortedCities() {
+  var favorites = getFavorites();
+  var favList = [];
+  var otherList = [];
+
+  allCities.forEach(function (city) {
+    if (favorites.indexOf(city) !== -1) {
+      favList.push(city);
+    } else {
+      otherList.push(city);
+    }
+  });
+
+  return favList.concat(otherList);
+}
+
+function selectCity(city, color) {
+  document.querySelectorAll(".link[data-city]").forEach(function (l) {
+    l.classList.remove("active");
+  });
+  var match = document.querySelector('.link[data-city="' + city + '"]');
+  if (match) {
+    match.classList.add("active");
+  }
+  preview.style.setProperty("--city-color", color);
+  fetchWeather(city);
+}
+
+var pageSize = 4;
+var linksContainer = document.getElementById("links");
+var extras = document.getElementById("extras");
+
+function cityClass(city) {
+  return city.toLowerCase().replace(/[^a-z]/g, "");
+}
+
+var mode = "main";
+var metroPage = 0;
+var regionalPage = 0;
+var ruralPage = 0;
+
+function renderMainList() {
+  linksContainer.innerHTML = "";
+  var sortedCities = getSortedCities();
+  var mainCities = sortedCities.slice(0, 4);
+
+  mainCities.forEach(function (city) {
+    var color = cityColors[city] || "#ffffff";
+    var favorites = getFavorites();
+    var isFav = favorites.indexOf(city) !== -1;
+
+    var container = document.createElement("div");
+    container.className = "link-container";
+
+    var btn = document.createElement("button");
+    btn.className = "link " + cityClass(city);
+    btn.setAttribute("data-city", city);
+    btn.style.setProperty("--sweep", color);
+
+    var span = document.createElement("span");
+    span.textContent = city.toUpperCase();
+    btn.appendChild(span);
+
+    btn.addEventListener("click", function () {
+      selectCity(city, color);
+    });
+
+    var favBtn = document.createElement("button");
+    favBtn.className = "fav-btn" + (isFav ? " favorited" : "");
+    favBtn.innerHTML = heartSvgString;
+    favBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      toggleFavorite(city);
+    });
+
+    container.appendChild(btn);
+    container.appendChild(favBtn);
+    linksContainer.appendChild(container);
+  });
+}
+
+function toggleFavorite(city) {
+  var favorites = getFavorites();
+  var index = favorites.indexOf(city);
+  if (index !== -1) {
+    favorites.splice(index, 1);
+  } else {
+    favorites.push(city);
+  }
+  saveFavorites(favorites);
+  renderMainList();
+  if (mode === "metro") {
+    renderMetroList(metroPage);
+  } else if (mode === "regional") {
+    renderRegionalList(regionalPage);
+  } else if (mode === "rural") {
+    renderRuralList(ruralPage);
+  } else {
+    renderDefaultButtons();
+  }
+}
+
+function renderDefaultButtons() {
+  extras.innerHTML = "";
+
+  var containerMetro = document.createElement("div");
+  containerMetro.className = "link-container";
+  var metroBtn = document.createElement("button");
+  metroBtn.className = "link metro-button";
+  metroBtn.innerHTML = "<span>METRO</span>";
+  metroBtn.addEventListener("click", function () {
+    mode = "metro";
+    metroPage = 0;
+    renderMetroList(metroPage);
+  });
+  containerMetro.appendChild(metroBtn);
+  extras.appendChild(containerMetro);
+
+  var containerRegional = document.createElement("div");
+  containerRegional.className = "link-container";
+  var regionalBtn = document.createElement("button");
+  regionalBtn.className = "link regional-button";
+  regionalBtn.innerHTML = "<span>REGIONAL</span>";
+  regionalBtn.addEventListener("click", function () {
+    mode = "regional";
+    regionalPage = 0;
+    renderRegionalList(regionalPage);
+  });
+  containerRegional.appendChild(regionalBtn);
+  extras.appendChild(containerRegional);
+
+  var containerRural = document.createElement("div");
+  containerRural.className = "link-container";
+  var ruralBtn = document.createElement("button");
+  ruralBtn.className = "link rural-button";
+  ruralBtn.innerHTML = "<span>RURAL</span>";
+  ruralBtn.addEventListener("click", function () {
+    mode = "rural";
+    ruralPage = 0;
+    renderRuralList(ruralPage);
+  });
+  containerRural.appendChild(ruralBtn);
+  extras.appendChild(containerRural);
+}
+
+function renderMetroList(page) {
+  extras.innerHTML = "";
+
+  var sortedCities = getSortedCities();
+  var remainingCities = sortedCities.slice(4);
+  var pageCount = Math.ceil(remainingCities.length / pageSize);
+
+  var start = page * pageSize;
+  var pageCities = remainingCities.slice(start, start + pageSize);
+
+  pageCities.forEach(function (city, i) {
+    var color = cityColors[city] || sweepPalette[(start + i) % sweepPalette.length];
+    var favorites = getFavorites();
+    var isFav = favorites.indexOf(city) !== -1;
+
+    var container = document.createElement("div");
+    container.className = "link-container";
+
+    var btn = document.createElement("button");
+    btn.className = "link " + cityClass(city);
+    btn.setAttribute("data-city", city);
+    btn.style.setProperty("--sweep", color);
+
+    var span = document.createElement("span");
+    span.textContent = city.toUpperCase();
+    btn.appendChild(span);
+
+    btn.addEventListener("click", function () {
+      selectCity(city, color);
+    });
+
+    var favBtn = document.createElement("button");
+    favBtn.className = "fav-btn" + (isFav ? " favorited" : "");
+    favBtn.innerHTML = heartSvgString;
+    favBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      toggleFavorite(city);
+    });
+
+    container.appendChild(btn);
+    container.appendChild(favBtn);
+    extras.appendChild(container);
+  });
+
+  var navRow = document.createElement("div");
+  navRow.className = "nav-row";
+
+  var backBtn = document.createElement("button");
+  backBtn.className = "link nav";
+  backBtn.innerHTML = "<span>BACK</span>";
+  backBtn.addEventListener("click", function () {
+    if (metroPage === 0) {
+      mode = "main";
+      renderDefaultButtons();
+      return;
+    }
+
+    metroPage -= 1;
+    renderMetroList(metroPage);
+  });
+
+  var forwardBtn = document.createElement("button");
+  forwardBtn.className = "link nav";
+  forwardBtn.innerHTML = "<span>FORWARD</span>";
+  forwardBtn.addEventListener("click", function () {
+    metroPage = metroPage === pageCount - 1 ? 0 : metroPage + 1;
+    renderMetroList(metroPage);
+  });
+
+  navRow.appendChild(backBtn);
+  navRow.appendChild(forwardBtn);
+  extras.appendChild(navRow);
+}
+
+function renderRegionalList(page) {
+  extras.innerHTML = "";
+
+  var pageCount = Math.ceil(regionalCities.length / pageSize);
+  var start = page * pageSize;
+  var pageCities = regionalCities.slice(start, start + pageSize);
+
+  pageCities.forEach(function (city, i) {
+    var color = "#d6c2ff";
+    var favorites = getFavorites();
+    var isFav = favorites.indexOf(city) !== -1;
+
+    var container = document.createElement("div");
+    container.className = "link-container";
+
+    var btn = document.createElement("button");
+    btn.className = "link " + cityClass(city);
+    btn.setAttribute("data-city", city);
+    btn.style.setProperty("--sweep", color);
+
+    var span = document.createElement("span");
+    span.textContent = city.toUpperCase();
+    btn.appendChild(span);
+
+    btn.addEventListener("click", function () {
+      selectCity(city, color);
+    });
+
+    var favBtn = document.createElement("button");
+    favBtn.className = "fav-btn" + (isFav ? " favorited" : "");
+    favBtn.innerHTML = heartSvgString;
+    favBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      toggleFavorite(city);
+    });
+
+    container.appendChild(btn);
+    container.appendChild(favBtn);
+    extras.appendChild(container);
+  });
+
+  var navRow = document.createElement("div");
+  navRow.className = "nav-row";
+
+  var backBtn = document.createElement("button");
+  backBtn.className = "link nav";
+  backBtn.innerHTML = "<span>BACK</span>";
+  backBtn.addEventListener("click", function () {
+    if (regionalPage === 0) {
+      mode = "main";
+      renderDefaultButtons();
+      return;
+    }
+
+    regionalPage -= 1;
+    renderRegionalList(regionalPage);
+  });
+
+  var forwardBtn = document.createElement("button");
+  forwardBtn.className = "link nav";
+  forwardBtn.innerHTML = "<span>FORWARD</span>";
+  forwardBtn.addEventListener("click", function () {
+    regionalPage = regionalPage === pageCount - 1 ? 0 : regionalPage + 1;
+    renderRegionalList(regionalPage);
+  });
+
+  navRow.appendChild(backBtn);
+  navRow.appendChild(forwardBtn);
+  extras.appendChild(navRow);
+}
+
+function renderRuralList(page) {
+  extras.innerHTML = "";
+
+  var pageCount = Math.ceil(ruralCities.length / pageSize);
+  var start = page * pageSize;
+  var pageCities = ruralCities.slice(start, start + pageSize);
+
+  pageCities.forEach(function (city, i) {
+    var color = "#e6c280";
+    var favorites = getFavorites();
+    var isFav = favorites.indexOf(city) !== -1;
+
+    var container = document.createElement("div");
+    container.className = "link-container";
+
+    var btn = document.createElement("button");
+    btn.className = "link " + cityClass(city);
+    btn.setAttribute("data-city", city);
+    btn.style.setProperty("--sweep", color);
+
+    var span = document.createElement("span");
+    span.textContent = city.toUpperCase();
+    btn.appendChild(span);
+
+    btn.addEventListener("click", function () {
+      selectCity(city, color);
+    });
+
+    var favBtn = document.createElement("button");
+    favBtn.className = "fav-btn" + (isFav ? " favorited" : "");
+    favBtn.innerHTML = heartSvgString;
+    favBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      toggleFavorite(city);
+    });
+
+    container.appendChild(btn);
+    container.appendChild(favBtn);
+    extras.appendChild(container);
+  });
+
+  var navRow = document.createElement("div");
+  navRow.className = "nav-row";
+
+  var backBtn = document.createElement("button");
+  backBtn.className = "link nav";
+  backBtn.innerHTML = "<span>BACK</span>";
+  backBtn.addEventListener("click", function () {
+    if (ruralPage === 0) {
+      mode = "main";
+      renderDefaultButtons();
+      return;
+    }
+
+    ruralPage -= 1;
+    renderRuralList(ruralPage);
+  });
+
+  var forwardBtn = document.createElement("button");
+  forwardBtn.className = "link nav";
+  forwardBtn.innerHTML = "<span>FORWARD</span>";
+  forwardBtn.addEventListener("click", function () {
+    ruralPage = ruralPage === pageCount - 1 ? 0 : ruralPage + 1;
+    renderRuralList(ruralPage);
+  });
+
+  navRow.appendChild(backBtn);
+  navRow.appendChild(forwardBtn);
+  extras.appendChild(navRow);
+}
+
+renderMainList();
+renderDefaultButtons();
 
 </script>
 
