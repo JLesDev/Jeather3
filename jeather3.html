@@ -907,6 +907,132 @@ input[type="number"].auth-input::-webkit-outer-spin-button {
   justify-content: space-between;
 }
 
+.leaderboard-item-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.follow-btn {
+  position: relative;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border: 1px solid #ff2ec4;
+  background-color: transparent;
+  color: #ff2ec4;
+  cursor: pointer;
+  z-index: 3;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+
+.follow-btn:hover {
+  opacity: 0.85;
+}
+
+.follow-btn.following {
+  background-color: #ff2ec4;
+  color: #000000;
+}
+
+.follow-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.search-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-top: 24px;
+  min-height: 20px;
+}
+
+/* Post composer & Feed */
+.post-textarea {
+  background-color: transparent;
+  border: 1px solid #333333;
+  color: #ffffff;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  padding: 14px 18px;
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  transition: border-color 0.2s ease;
+}
+
+.post-textarea:focus {
+  outline: none;
+  border-color: #ff2ec4;
+}
+
+.post-char-count {
+  margin-top: 6px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #777777;
+  text-align: right;
+}
+
+.feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  margin-top: 24px;
+  max-width: 420px;
+}
+
+.feed-item {
+  border-bottom: 1px solid #333333;
+  padding-bottom: 16px;
+}
+
+.feed-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 14px;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.feed-item-user {
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.feed-item-time {
+  font-size: 11px;
+  color: #777777;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.feed-item-city {
+  font-size: 11px;
+  color: #aaaaaa;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.feed-item-text {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #ffffff;
+  word-wrap: break-word;
+}
+
 /* Mobile city-select vs weather screens */
 .change-btn {
   display: none;
@@ -1004,6 +1130,7 @@ input[type="number"].auth-input::-webkit-outer-spin-button {
   .auth-bar {
     position: static;
     display: flex;
+    flex-wrap: wrap;
     justify-content: flex-end;
     width: 100%;
     padding: 14px 20px 0 20px;
@@ -1058,6 +1185,9 @@ input[type="number"].auth-input::-webkit-outer-spin-button {
 <div class="wrapper">
 
   <div class="auth-bar" id="authBar">
+    <button class="auth-btn" id="feedBarBtn" style="display:none;" title="Feed"><span>Feed</span></button>
+    <button class="auth-btn" id="postBarBtn" style="display:none;" title="New Post"><span>Post</span></button>
+    <button class="auth-btn" id="searchBarBtn" title="Search Users"><span>Search</span></button>
     <button class="auth-btn" id="leaderboardBarBtn" title="Leaderboard"><span>Leaderboard</span></button>
     <button class="auth-btn" id="guessToggleBtn" style="display:none;" title="Guessing Mode"><span>G</span></button>
     <button class="auth-btn" id="loginBtn"><span>L-I</span></button>
@@ -1417,6 +1547,40 @@ function renderGuessPrompt(city, actualTemp) {
   });
 }
 
+function followButtonHTML(username, isFollowing, isSelf) {
+  if (isSelf || !currentUser) return '';
+  return '<button class="follow-btn' + (isFollowing ? ' following' : '') +
+    '" onclick="event.stopPropagation(); toggleFollow(this, \'' + username.replace(/'/g, "\\'") + '\', ' + !!isFollowing + ')">' +
+    '<span>' + (isFollowing ? 'Following' : 'Follow') + '</span></button>';
+}
+
+window.toggleFollow = function(btn, username, currentlyFollowing) {
+  var endpoint = currentlyFollowing ? "/unfollow" : "/follow";
+  btn.disabled = true;
+  fetch(AUTH_API_BASE + endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ username: username })
+  })
+  .then(function(res) { return res.json().then(function(d) { return { ok: res.ok, data: d }; }); })
+  .then(function(result) {
+    btn.disabled = false;
+    if (!result.ok) return;
+    var nowFollowing = !currentlyFollowing;
+    btn.setAttribute("onclick", "event.stopPropagation(); toggleFollow(this, '" + username.replace(/'/g, "\\'") + "', " + nowFollowing + ")");
+    btn.querySelector("span").textContent = nowFollowing ? "Following" : "Follow";
+    if (nowFollowing) {
+      btn.classList.add("following");
+    } else {
+      btn.classList.remove("following");
+    }
+  })
+  .catch(function() {
+    btn.disabled = false;
+  });
+};
+
 function fetchLeaderboard() {
   fetch(AUTH_API_BASE + "/leaderboard", {
     method: "GET",
@@ -1434,7 +1598,10 @@ function fetchLeaderboard() {
       html += '<div class="leaderboard-item"><span>No guesses yet!</span><span>-</span></div>';
     } else {
       entries.forEach(function(e) {
-        html += '<div class="leaderboard-item"><span>' + e.username + '</span><span>' + Math.round(e.average) + ' pts</span></div>';
+        html += '<div class="leaderboard-item">';
+        html += '<span>' + e.username + '</span>';
+        html += '<span class="leaderboard-item-right"><span>' + Math.round(e.average) + ' pts</span>' + followButtonHTML(e.username, e.isFollowing, e.isSelf) + '</span>';
+        html += '</div>';
       });
     }
     html += '</div>';
@@ -1444,6 +1611,202 @@ function fetchLeaderboard() {
   })
   .catch(function() {
     preview.innerHTML = '<div class="weather-placeholder">FAILED TO LOAD LEADERBOARD</div>';
+  });
+}
+
+function renderSearchView() {
+  window.currentActiveCity = '';
+  var html = '';
+  html += '<div class="leaderboard-view">';
+  html += '<div class="weather-city">FIND USERS</div>';
+  html += '<div class="links" style="margin-top:20px;">';
+  html += '<div class="link-container">';
+  html += '<input type="text" class="auth-input" id="userSearchInput" placeholder="Search username" autocomplete="off">';
+  html += '</div>';
+  html += '</div>';
+  html += '<div class="search-results" id="userSearchResults"></div>';
+  html += '<button class="change-btn" style="display:inline-block; margin-top:24px;" onclick="exitMobileWeatherView()"><span>Back</span></button>';
+  html += '</div>';
+  preview.innerHTML = html;
+
+  var input = document.getElementById("userSearchInput");
+  var resultsEl = document.getElementById("userSearchResults");
+  var debounceTimer = null;
+
+  input.addEventListener("input", function() {
+    var q = input.value.trim();
+    clearTimeout(debounceTimer);
+    if (!q) {
+      resultsEl.innerHTML = '';
+      return;
+    }
+    debounceTimer = setTimeout(function() {
+      runUserSearch(q, resultsEl);
+    }, 300);
+  });
+
+  input.focus();
+}
+
+function runUserSearch(q, resultsEl) {
+  resultsEl.innerHTML = '<div class="weather-placeholder">SEARCHING&hellip;</div>';
+  fetch(AUTH_API_BASE + "/search?q=" + encodeURIComponent(q), {
+    method: "GET",
+    credentials: "include"
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    var users = data.users || [];
+    if (users.length === 0) {
+      resultsEl.innerHTML = '<div class="weather-placeholder">NO USERS FOUND</div>';
+      return;
+    }
+    var html = '';
+    users.forEach(function(u) {
+      html += '<div class="leaderboard-item">';
+      html += '<span>' + u.username + '</span>';
+      html += '<span class="leaderboard-item-right">' + followButtonHTML(u.username, u.isFollowing, u.isSelf) + '</span>';
+      html += '</div>';
+    });
+    resultsEl.innerHTML = html;
+  })
+  .catch(function() {
+    resultsEl.innerHTML = '<div class="weather-placeholder">SEARCH FAILED</div>';
+  });
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function timeAgo(isoString) {
+  var then = new Date(isoString).getTime();
+  var diffSeconds = Math.max(0, Math.round((Date.now() - then) / 1000));
+  if (diffSeconds < 60) return "just now";
+  var diffMinutes = Math.round(diffSeconds / 60);
+  if (diffMinutes < 60) return diffMinutes + "m ago";
+  var diffHours = Math.round(diffMinutes / 60);
+  if (diffHours < 24) return diffHours + "h ago";
+  var diffDays = Math.round(diffHours / 24);
+  return diffDays + "d ago";
+}
+
+function renderPostComposer() {
+  var cityLabel = window.currentActiveCity ? window.currentActiveCity.toUpperCase() : '';
+  var postCity = window.currentActiveCity || null;
+
+  var html = '';
+  html += '<div class="leaderboard-view">';
+  html += '<div class="weather-city">NEW POST</div>';
+  if (cityLabel) {
+    html += '<div class="feed-item-city" style="margin-top:12px;">Posting from ' + cityLabel + '</div>';
+  }
+  html += '<div class="links" style="margin-top:20px;">';
+  html += '<div class="link-container">';
+  html += '<textarea class="post-textarea" id="postTextInput" maxlength="280" placeholder="What\'s the weather doing?"></textarea>';
+  html += '</div>';
+  html += '</div>';
+  html += '<div class="post-char-count" id="postCharCount">280 characters left</div>';
+  html += '<div class="auth-error" id="postError"></div>';
+  html += '<div class="links">';
+  html += '<div class="link-container">';
+  html += '<button class="link nav" id="submitPostBtn"><span>Post</span></button>';
+  html += '</div>';
+  html += '<div class="link-container">';
+  html += '<button class="link nav" id="cancelPostBtn"><span>Cancel</span></button>';
+  html += '</div>';
+  html += '</div>';
+  html += '</div>';
+  preview.innerHTML = html;
+
+  var textarea = document.getElementById("postTextInput");
+  var charCount = document.getElementById("postCharCount");
+  var errorDiv = document.getElementById("postError");
+  var submitBtn = document.getElementById("submitPostBtn");
+  var cancelBtn = document.getElementById("cancelPostBtn");
+
+  textarea.addEventListener("input", function() {
+    charCount.textContent = (280 - textarea.value.length) + " characters left";
+  });
+
+  cancelBtn.addEventListener("click", function() {
+    fetchFeed();
+  });
+
+  submitBtn.addEventListener("click", function() {
+    var text = textarea.value.trim();
+    if (!text) {
+      errorDiv.textContent = "Write something first.";
+      return;
+    }
+    submitBtn.disabled = true;
+    fetch(AUTH_API_BASE + "/post", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ text: text, city: postCity })
+    })
+    .then(function(res) { return res.json().then(function(d) { return { ok: res.ok, data: d }; }); })
+    .then(function(result) {
+      submitBtn.disabled = false;
+      if (!result.ok) {
+        errorDiv.textContent = result.data.error || "Failed to post.";
+        return;
+      }
+      fetchFeed();
+    })
+    .catch(function() {
+      submitBtn.disabled = false;
+      errorDiv.textContent = "Network error posting.";
+    });
+  });
+
+  textarea.focus();
+}
+
+function fetchFeed() {
+  preview.innerHTML = '<div class="weather-placeholder">LOADING FEED</div>';
+  fetch(AUTH_API_BASE + "/feed", {
+    method: "GET",
+    credentials: "include"
+  })
+  .then(function(res) { return res.json().then(function(d) { return { ok: res.ok, data: d }; }); })
+  .then(function(result) {
+    if (!result.ok) {
+      preview.innerHTML = '<div class="weather-placeholder">' + (result.data.error || "FAILED TO LOAD FEED").toUpperCase() + '</div>';
+      return;
+    }
+    var posts = result.data.posts || [];
+    var html = '';
+    html += '<div class="leaderboard-view">';
+    html += '<div class="weather-city">FEED</div>';
+    html += '<div class="feed-list">';
+    if (posts.length === 0) {
+      html += '<div class="weather-placeholder">NO POSTS YET &mdash; FOLLOW SOMEONE OR POST SOMETHING</div>';
+    } else {
+      posts.forEach(function(p) {
+        html += '<div class="feed-item">';
+        html += '<div class="feed-item-header"><span class="feed-item-user">' + escapeHtml(p.username) + '</span><span class="feed-item-time">' + timeAgo(p.createdAt) + '</span></div>';
+        if (p.city) {
+          html += '<div class="feed-item-city">' + escapeHtml(p.city.toUpperCase()) + '</div>';
+        }
+        html += '<div class="feed-item-text">' + escapeHtml(p.text) + '</div>';
+        html += '</div>';
+      });
+    }
+    html += '</div>';
+    html += '<button class="change-btn" style="display:inline-block; margin-top:24px;" onclick="fetchFeed()"><span>Refresh</span></button>';
+    html += '<button class="change-btn" style="display:inline-block; margin-top:8px;" onclick="exitMobileWeatherView()"><span>Back</span></button>';
+    html += '</div>';
+    preview.innerHTML = html;
+  })
+  .catch(function() {
+    preview.innerHTML = '<div class="weather-placeholder">FAILED TO LOAD FEED</div>';
   });
 }
 
@@ -1995,6 +2358,9 @@ var loginBtn = document.getElementById("loginBtn");
 var registerBtn = document.getElementById("registerBtn");
 var guessToggleBtn = document.getElementById("guessToggleBtn");
 var leaderboardBarBtn = document.getElementById("leaderboardBarBtn");
+var searchBarBtn = document.getElementById("searchBarBtn");
+var feedBarBtn = document.getElementById("feedBarBtn");
+var postBarBtn = document.getElementById("postBarBtn");
 
 var authMode = "login";
 var currentUser = null;
@@ -2063,6 +2429,27 @@ leaderboardBarBtn.addEventListener("click", function() {
   }
 });
 
+searchBarBtn.addEventListener("click", function() {
+  renderSearchView();
+  if (isMobile()) {
+    enterMobileWeatherView();
+  }
+});
+
+feedBarBtn.addEventListener("click", function() {
+  fetchFeed();
+  if (isMobile()) {
+    enterMobileWeatherView();
+  }
+});
+
+postBarBtn.addEventListener("click", function() {
+  renderPostComposer();
+  if (isMobile()) {
+    enterMobileWeatherView();
+  }
+});
+
 authBackBtn.addEventListener("click", closeAuthScreen);
 
 authSubmitBtn.addEventListener("click", function () {
@@ -2125,11 +2512,15 @@ function updateAuthBar() {
     loginSpan.textContent = "OUT";
     registerBtn.style.display = "none";
     guessToggleBtn.style.display = "inline-block";
+    feedBarBtn.style.display = "inline-block";
+    postBarBtn.style.display = "inline-block";
   } else {
     loginBtn.classList.remove("logged-in");
     loginSpan.textContent = "L-I";
     registerBtn.style.display = "inline-block";
     guessToggleBtn.style.display = "none";
+    feedBarBtn.style.display = "none";
+    postBarBtn.style.display = "none";
   }
 }
 
