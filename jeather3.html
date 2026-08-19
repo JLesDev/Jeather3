@@ -33,6 +33,7 @@ body {
   align-items: stretch;
   min-height: 100vh;
   width: 100%;
+  position: relative;
 }
 
 .content {
@@ -67,7 +68,8 @@ body {
   font-weight: 700;
   letter-spacing: 2px;
   text-align: left;
-  line-height: 1;
+  line-height: 1.2;
+  padding-bottom: 10px;
   z-index: 0;
   cursor: default;
 }
@@ -548,7 +550,7 @@ body {
   text-transform: uppercase;
   color: #ffffff;
   background-color: transparent;
-  border: 1px solid #333333;
+  border: none;
   padding: 14px 20px;
   text-align: left;
   cursor: pointer;
@@ -583,6 +585,376 @@ body {
   color: #000000;
 }
 
+/* Auth buttons (top right) */
+.auth-bar {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  display: flex;
+  gap: 8px;
+  z-index: 50;
+}
+
+.auth-btn {
+  position: relative;
+  overflow: hidden;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #ffffff;
+  background-color: transparent;
+  border: none;
+  padding: 8px 14px;
+  cursor: pointer;
+  z-index: 0;
+}
+
+.auth-btn span {
+  position: relative;
+  z-index: 2;
+}
+
+.auth-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: #ff2ec4;
+  z-index: 1;
+  transition: left 0.35s ease;
+}
+
+.auth-btn:hover::before {
+  left: 0;
+}
+
+.auth-btn:hover span {
+  color: #000000;
+}
+
+.auth-btn.logged-in span {
+  color: #b5e8c5;
+}
+
+.auth-btn.guessing-active {
+  background-color: #ff2ec4;
+}
+.auth-btn.guessing-active span {
+  color: #000000;
+}
+.auth-btn.guessing-active::before {
+  left: 0;
+  background-color: #ffffff;
+}
+.auth-btn.guessing-active:hover span {
+  color: #ff2ec4;
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 46, 196, 0.7); }
+  50% { transform: scale(1.08); box-shadow: 0 0 16px 4px rgba(255, 46, 196, 0.9); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 46, 196, 0); }
+}
+
+.auth-btn.guessing-pulse {
+  animation: pulseGlow 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Full-screen auth view (no floating box) */
+.content,
+.preview,
+.auth-bar {
+  transition: opacity 0.45s cubic-bezier(0.6, 0, 0.9, 0.2),
+              transform 0.45s cubic-bezier(0.6, 0, 0.9, 0.2),
+              filter 0.45s ease;
+}
+
+body.auth-hiding .content,
+body.auth-hiding .preview,
+body.auth-hiding .auth-bar {
+  opacity: 0;
+  transform: scale(0.94) translateY(-18px);
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+body.auth-open .content,
+body.auth-open .preview,
+body.auth-open .auth-bar {
+  display: none;
+}
+
+body.auth-open .auth-view {
+  display: flex;
+}
+
+.auth-view {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px 48px;
+  flex: 1 1 100%;
+}
+
+.auth-view > * {
+  opacity: 0;
+  transform: translateY(24px);
+  filter: blur(6px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-view.visible > * {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.auth-view.visible > *:nth-child(1) { transition-delay: 0.05s; }
+.auth-view.visible > *:nth-child(2) { transition-delay: 0.15s; }
+.auth-view.visible > *:nth-child(3) { transition-delay: 0.24s; }
+.auth-view.visible > *:nth-child(4) { transition-delay: 0.32s; }
+
+.auth-view .header::before {
+  background-color: #b5e8c5;
+}
+
+.auth-view .links {
+  max-width: 400px;
+}
+
+.auth-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.auth-field-group:last-child {
+  margin-bottom: 0;
+}
+
+.auth-label {
+  display: block;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.auth-input {
+  background-color: transparent;
+  border: 1px solid #333333;
+  color: #ffffff;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  padding: 10px 24px;
+  width: 100%;
+  text-align: left;
+  transition: border-color 0.2s ease;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: #ff2ec4;
+}
+
+/* Completely custom styled number input spinners */
+input[type="number"].auth-input {
+  -moz-appearance: textfield;
+}
+
+input[type="number"].auth-input::-webkit-inner-spin-button,
+input[type="number"].auth-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  margin: 0;
+}
+
+.auth-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.auth-input-wrapper .auth-input {
+  padding-right: 56px;
+}
+
+.number-spin-controls {
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  bottom: 1px;
+  width: 40px;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #333333;
+  background-color: #111111;
+  z-index: 3;
+}
+
+.spin-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background-color 0.2s ease;
+}
+
+.spin-btn:first-child {
+  border-bottom: 1px solid #333333;
+}
+
+.spin-btn svg {
+  width: 12px;
+  height: 12px;
+  stroke: #ff2ec4;
+  stroke-width: 2.5;
+  fill: none;
+}
+
+.spin-btn:hover {
+  background-color: rgba(255, 46, 196, 0.1);
+}
+
+.auth-error {
+  color: #ff5c5c;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  min-height: 16px;
+}
+
+/* Leaderboard Stylised Container */
+.leaderboard-view {
+  width: 100%;
+  max-width: 400px;
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-top: 40px;
+}
+
+.leaderboard-item {
+  position: relative;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: #ffffff;
+  padding: 10px 24px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  overflow: hidden;
+  background-color: transparent;
+  border: none;
+  z-index: 0;
+  cursor: default;
+}
+
+.leaderboard-item span {
+  position: relative;
+  z-index: 2;
+}
+
+.leaderboard-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: #ff2ec4;
+  z-index: 1;
+  transition: left 0.35s ease;
+}
+
+.leaderboard-item:hover::before {
+  left: 0;
+}
+
+.leaderboard-item:hover span {
+  color: #000000;
+}
+
+.leaderboard-header-row {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #777777;
+  text-transform: uppercase;
+  padding: 0 24px;
+  margin-bottom: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Mobile city-select vs weather screens */
+.change-btn {
+  display: none;
+  position: relative;
+  overflow: hidden;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #ffffff;
+  background-color: transparent;
+  border: none;
+  padding: 10px 16px;
+  cursor: pointer;
+  z-index: 0;
+  margin-top: 16px;
+}
+
+.change-btn span {
+  position: relative;
+  z-index: 2;
+}
+
+.change-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background-color: #ff2ec4;
+  z-index: 1;
+  transition: left 0.35s ease;
+}
+
+.change-btn:hover::before {
+  left: 0;
+}
+
+.change-btn:hover span {
+  color: #000000;
+}
+
+.mobile-weather-header {
+  display: none;
+}
+
 @media (max-width: 600px) {
   .header {
     font-size: 48px;
@@ -600,9 +972,21 @@ body {
   .content {
     flex: 1 1 100%;
     min-height: 100vh;
-    justify-content: space-between;
-    padding: 24px;
+    justify-content: flex-start;
+    padding: 20px;
     width: 100%;
+  }
+
+  .links {
+    margin-top: 12px;
+  }
+
+  #extras {
+    margin-top: 8px;
+  }
+
+  .footer {
+    margin-top: 24px;
   }
 
   .preview {
@@ -616,6 +1000,52 @@ body {
   .weather-temp {
     font-size: 56px;
   }
+
+  .auth-bar {
+    top: 14px;
+    right: 14px;
+  }
+
+  .auth-btn {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  body.mobile-weather-view .content {
+    display: none;
+  }
+
+  body.mobile-weather-view .mobile-weather-header {
+    display: flex;
+  }
+
+  body.mobile-weather-view .mobile-weather-header .change-btn {
+    display: inline-block;
+    margin-top: 0;
+  }
+
+  body.mobile-weather-view .preview {
+    border-top: none;
+    min-height: 100vh;
+    flex: 1 1 100%;
+  }
+
+  body.mobile-weather-view .auth-bar {
+    display: none;
+  }
+
+  .mobile-weather-header {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 16px 20px;
+  }
+
+  .mobile-weather-header .mobile-header-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
 }
 
 </style>
@@ -623,6 +1053,18 @@ body {
 <body>
 
 <div class="wrapper">
+
+  <div class="auth-bar" id="authBar">
+    <button class="auth-btn" id="leaderboardBarBtn" title="Leaderboard"><span>Leaderboard</span></button>
+    <button class="auth-btn" id="guessToggleBtn" style="display:none;" title="Guessing Mode"><span>G</span></button>
+    <button class="auth-btn" id="loginBtn"><span>L-I</span></button>
+    <button class="auth-btn" id="registerBtn"><span>R</span></button>
+  </div>
+
+  <div class="mobile-weather-header" id="mobileWeatherHeader">
+    <div class="mobile-header-title">Jeather 3</div>
+    <button class="change-btn" id="changeCityBtn"><span>Change</span></button>
+  </div>
 
   <div class="content">
 
@@ -639,17 +1081,44 @@ body {
   <div class="preview" id="preview">
   </div>
 
+  <div class="auth-view" id="authView">
+    <div class="header" id="authTitle"><span>Log-In</span></div>
+
+    <div class="links">
+      <div class="auth-field-group">
+        <label class="auth-label" for="authUsername">Username</label>
+        <input type="text" class="auth-input" id="authUsername" autocomplete="username">
+      </div>
+      <div class="auth-field-group">
+        <label class="auth-label" for="authPassword">Password</label>
+        <input type="password" class="auth-input" id="authPassword" autocomplete="current-password">
+      </div>
+    </div>
+
+    <div class="auth-error" id="authError"></div>
+
+    <div class="links">
+      <div class="link-container">
+        <button class="link nav" id="authSubmitBtn"><span>Log In</span></button>
+      </div>
+      <div class="link-container">
+        <button class="link nav" id="authBackBtn"><span>Back</span></button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
 
+var AUTH_API_BASE = "https://jeather3.jontyleslie.workers.dev";
 var heartSvgString = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
 
 var quotes = [
 "If you're offered a seat on a rocket ship, don't ask what seat. Just get on. Sheryl Sandberg",
 "First, have a definite, clear practical ideal; a goal, an objective. Aristotle",
 "If the wind will not serve, take to the oars. Latin Proverb",
-"You can't fall if you don't climb. But there's no joy in living your whole life on. the ground. Unknown",
+"You can't fall if you don't climb. But there's no joy in living your whole life on the ground. Unknown",
 "We must believe that we are gifted for something. Marie Curie",
 "Too many of us are not living our dreams because we are living our fears. Les Brown",
 "Challenges are what make life interesting and overcoming them is what makes life meaningful. Joshua J. Marine",
@@ -673,6 +1142,11 @@ var quotes = [
 ];
 
 var preview = document.getElementById("preview");
+var guessingMode = false;
+
+function isMobile() {
+  return window.innerWidth <= 600;
+}
 
 function randomQuote() {
   return quotes[Math.floor(Math.random() * quotes.length)];
@@ -804,6 +1278,9 @@ function renderWeather(city, current, hours, dailyMin, dailyMax, climate) {
   html += '</div>';
   html += '<div class="weather-chart">' + buildSparkline(hours) + '</div>';
   html += '<div class="weather-quote">' + randomQuote() + '</div>';
+  if (isMobile()) {
+    html += '<button class="change-btn" style="display:inline-block;" onclick="exitMobileWeatherView()"><span>Change</span></button>';
+  }
   html += '</div>';
   preview.innerHTML = html;
 }
@@ -848,6 +1325,125 @@ window.handleVote = function(city, type) {
   }
 };
 
+function renderGuessPrompt(city, actualTemp) {
+  window.currentActiveCity = city;
+  var html = '';
+  html += '<div class="auth-view visible" style="display:flex; padding:0; flex:1 1 100%;">';
+  html += '<div class="header"><span>Guess temperature</span></div>';
+  html += '<div class="links">';
+  html += '<div class="auth-field-group">';
+  html += '<label class="auth-label" for="tempGuessInput">' + city.toUpperCase() + ' TEMP (&deg;C)</label>';
+  html += '<div class="auth-input-wrapper">';
+  html += '<input type="number" class="auth-input" id="tempGuessInput" placeholder="Enter guess">';
+  html += '<div class="number-spin-controls">';
+  html += '<button type="button" class="spin-btn" id="spinUp"><svg viewBox="0 0 24 24"><path d="m18 15-6-6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+  html += '<button type="button" class="spin-btn" id="spinDown"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+  html += '</div>';
+  html += '</div>';
+  html += '</div>';
+  html += '</div>';
+  html += '<div class="auth-error" id="guessError"></div>';
+  html += '<div class="links">';
+  html += '<div class="link-container">';
+  html += '<button class="link nav" id="submitGuessBtn"><span>Submit Guess</span></button>';
+  html += '</div>';
+  html += '</div>';
+  html += '</div>';
+  preview.innerHTML = html;
+
+  var input = document.getElementById("tempGuessInput");
+  var submitBtn = document.getElementById("submitGuessBtn");
+  var errorDiv = document.getElementById("guessError");
+  var spinUp = document.getElementById("spinUp");
+  var spinDown = document.getElementById("spinDown");
+  input.focus();
+
+  spinUp.addEventListener("click", function() {
+    if (input.value === "") {
+      input.value = "20";
+    } else {
+      input.value = Number(input.value) + 1;
+    }
+  });
+
+  spinDown.addEventListener("click", function() {
+    if (input.value === "") {
+      input.value = "20";
+    } else {
+      input.value = Number(input.value) - 1;
+    }
+  });
+
+  submitBtn.addEventListener("click", function() {
+    var val = Number(input.value);
+    if (!Number.isFinite(val)) {
+      errorDiv.textContent = "Please enter a valid temperature number.";
+      return;
+    }
+    submitBtn.disabled = true;
+    fetch(AUTH_API_BASE + "/guess", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ city: city, guess: val, actual: actualTemp })
+    })
+    .then(function(res) { return res.json().then(function(d) { return { ok: res.ok, data: d }; }); })
+    .then(function(result) {
+      if (!result.ok) {
+        errorDiv.textContent = result.data.error || "Failed to submit guess.";
+        submitBtn.disabled = false;
+        return;
+      }
+      var score = result.data.score;
+      var avg = Math.round(result.data.average * 10) / 10;
+      
+      var resHtml = '';
+      resHtml += '<div class="weather">';
+      resHtml += '<div class="weather-city">RESULT</div>';
+      resHtml += '<div class="weather-temp">' + score + ' <span style="font-size:24px;">/ 1000 pts</span></div>';
+      resHtml += '<div class="weather-highlow" style="margin-top:16px;"><span>Actual: <b>' + Math.round(actualTemp) + '&deg;C</b></span><span>Your Guess: <b>' + val + '&deg;C</b></span></div>';
+      resHtml += '<div class="weather-feels" style="margin-top:16px;">Your Running Average: ' + avg + ' pts</div>';
+      resHtml += '<button class="change-btn" style="display:inline-block; margin-top:24px;" onclick="fetchLeaderboard()"><span>View Leaderboard</span></button>';
+      resHtml += '</div>';
+      preview.innerHTML = resHtml;
+    })
+    .catch(function() {
+      errorDiv.textContent = "Network error submitting guess.";
+      submitBtn.disabled = false;
+    });
+  });
+}
+
+function fetchLeaderboard() {
+  fetch(AUTH_API_BASE + "/leaderboard", {
+    method: "GET",
+    credentials: "include"
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    var entries = data.leaderboard || [];
+    var html = '';
+    html += '<div class="leaderboard-view">';
+    html += '<div class="weather-city">LEADERBOARD</div>';
+    html += '<div class="leaderboard-list">';
+    html += '<div class="leaderboard-header-row"><span>User</span><span>Avg</span></div>';
+    if (entries.length === 0) {
+      html += '<div class="leaderboard-item"><span>No guesses yet!</span><span>-</span></div>';
+    } else {
+      entries.forEach(function(e) {
+        html += '<div class="leaderboard-item"><span>' + e.username + '</span><span>' + Math.round(e.average) + ' pts</span></div>';
+      });
+    }
+    html += '</div>';
+    html += '<button class="change-btn" style="display:inline-block; margin-top:24px;" onclick="exitMobileWeatherView()"><span>Back</span></button>';
+    html += '</div>';
+    preview.innerHTML = html;
+  })
+  .catch(function() {
+    preview.innerHTML = '<div class="weather-placeholder">FAILED TO LOAD LEADERBOARD</div>';
+  });
+}
+
 function renderError(city) {
   window.currentActiveCity = city;
   var html = '';
@@ -858,6 +1454,9 @@ function renderError(city) {
   html += '<button class="notify-button" data-target="BOM"><span>Notify BOM</span></button>';
   html += '<button class="notify-button" data-target="JT"><span>Notify JT</span></button>';
   html += '</div>';
+  if (isMobile()) {
+    html += '<button class="change-btn" style="display:inline-block;" onclick="exitMobileWeatherView()"><span>Change</span></button>';
+  }
   html += '</div>';
   preview.innerHTML = html;
 
@@ -879,9 +1478,7 @@ function fetchWeather(city) {
   renderLoading(city);
   var searchUrl = "https://api.weather.bom.gov.au/v1/locations?search=" + encodeURIComponent(city);
   fetch(searchUrl)
-    .then(function (response) {
-      return response.json();
-    })
+    .then(function (response) { return response.json(); })
     .then(function (searchJson) {
       var geohash = searchJson.data[0].geohash.slice(0, 6);
       var hourlyUrl = "https://api.weather.bom.gov.au/v1/locations/" + geohash + "/forecasts/hourly";
@@ -916,7 +1513,11 @@ function fetchWeather(city) {
         climate = climateJson.data.find(function(c) { return c.month === currentMonth; });
       }
 
-      renderWeather(city, hours[0], hours, dailyMin, dailyMax, climate);
+      if (guessingMode) {
+        renderGuessPrompt(city, hours[0].temp);
+      } else {
+        renderWeather(city, hours[0], hours, dailyMin, dailyMax, climate);
+      }
     })
     .catch(function () {
       renderError(city);
@@ -995,30 +1596,10 @@ function saveFavorites(favorites) {
 }
 
 var allCities = [
-  "Melbourne",
-  "Adelaide",
-  "Sydney",
-  "Brisbane",
-  "Perth",
-  "Gold Coast",
-  "Newcastle",
-  "Canberra",
-  "Sunshine Coast",
-  "Central Coast",
-  "Wollongong",
-  "Geelong",
-  "Hobart",
-  "Townsville",
-  "Cairns",
-  "Toowoomba",
-  "Darwin",
-  "Ballarat",
-  "Bendigo",
-  "Albury-Wodonga",
-  "Launceston",
-  "Mackay",
-  "Bunbury",
-  "Rockhampton"
+  "Melbourne", "Adelaide", "Sydney", "Brisbane", "Perth", "Gold Coast",
+  "Newcastle", "Canberra", "Sunshine Coast", "Central Coast", "Wollongong",
+  "Geelong", "Hobart", "Townsville", "Cairns", "Toowoomba", "Darwin",
+  "Ballarat", "Bendigo", "Albury-Wodonga", "Launceston", "Mackay", "Bunbury", "Rockhampton"
 ];
 
 function getSortedCities() {
@@ -1037,6 +1618,14 @@ function getSortedCities() {
   return favList.concat(otherList);
 }
 
+function enterMobileWeatherView() {
+  document.body.classList.add("mobile-weather-view");
+}
+
+function exitMobileWeatherView() {
+  document.body.classList.remove("mobile-weather-view");
+}
+
 function selectCity(city, color) {
   document.querySelectorAll(".link[data-city]").forEach(function (l) {
     l.classList.remove("active");
@@ -1047,6 +1636,9 @@ function selectCity(city, color) {
   }
   preview.style.setProperty("--city-color", color);
   fetchWeather(city);
+  if (isMobile()) {
+    enterMobileWeatherView();
+  }
 }
 
 var pageSize = 4;
@@ -1222,7 +1814,6 @@ function renderMetroList(page) {
       renderDefaultButtons();
       return;
     }
-
     metroPage -= 1;
     renderMetroList(metroPage);
   });
@@ -1293,7 +1884,6 @@ function renderRegionalList(page) {
       renderDefaultButtons();
       return;
     }
-
     regionalPage -= 1;
     renderRegionalList(regionalPage);
   });
@@ -1364,7 +1954,6 @@ function renderRuralList(page) {
       renderDefaultButtons();
       return;
     }
-
     ruralPage -= 1;
     renderRuralList(ruralPage);
   });
@@ -1384,6 +1973,182 @@ function renderRuralList(page) {
 
 renderMainList();
 renderDefaultButtons();
+
+document.getElementById("changeCityBtn").addEventListener("click", function () {
+  exitMobileWeatherView();
+});
+
+var AUTH_TRANSITION_MS = 450;
+var AUTH_EXIT_MS = 550;
+
+var authView = document.getElementById("authView");
+var authTitle = document.getElementById("authTitle").querySelector("span");
+var authUsername = document.getElementById("authUsername");
+var authPassword = document.getElementById("authPassword");
+var authError = document.getElementById("authError");
+var authSubmitBtn = document.getElementById("authSubmitBtn");
+var authBackBtn = document.getElementById("authBackBtn");
+var loginBtn = document.getElementById("loginBtn");
+var registerBtn = document.getElementById("registerBtn");
+var guessToggleBtn = document.getElementById("guessToggleBtn");
+var leaderboardBarBtn = document.getElementById("leaderboardBarBtn");
+
+var authMode = "login";
+var currentUser = null;
+
+function openAuthScreen(m) {
+  authMode = m;
+  authError.textContent = "";
+  authUsername.value = "";
+  authPassword.value = "";
+  if (m === "login") {
+    authTitle.textContent = "Log-In";
+    authSubmitBtn.querySelector("span").textContent = "Log In";
+  } else {
+    authTitle.textContent = "Register";
+    authSubmitBtn.querySelector("span").textContent = "Register";
+  }
+
+  document.body.classList.add("auth-hiding");
+
+  setTimeout(function () {
+    document.body.classList.add("auth-open");
+    void authView.offsetWidth;
+    authView.classList.add("visible");
+    authUsername.focus();
+  }, AUTH_TRANSITION_MS);
+}
+
+function closeAuthScreen() {
+  authView.classList.remove("visible");
+
+  setTimeout(function () {
+    document.body.classList.remove("auth-open");
+    void document.body.offsetWidth;
+    document.body.classList.remove("auth-hiding");
+  }, AUTH_EXIT_MS);
+}
+
+loginBtn.addEventListener("click", function () {
+  if (currentUser) {
+    logoutUser();
+    return;
+  }
+  openAuthScreen("login");
+});
+
+registerBtn.addEventListener("click", function () {
+  openAuthScreen("register");
+});
+
+guessToggleBtn.addEventListener("click", function() {
+  guessingMode = !guessingMode;
+  guessToggleBtn.classList.remove("guessing-pulse");
+  void guessToggleBtn.offsetWidth; // trigger reflow for animation restart
+  guessToggleBtn.classList.add("guessing-pulse");
+  if (guessingMode) {
+    guessToggleBtn.classList.add("guessing-active");
+  } else {
+    guessToggleBtn.classList.remove("guessing-active");
+  }
+});
+
+leaderboardBarBtn.addEventListener("click", function() {
+  fetchLeaderboard();
+  if (isMobile()) {
+    enterMobileWeatherView();
+  }
+});
+
+authBackBtn.addEventListener("click", closeAuthScreen);
+
+authSubmitBtn.addEventListener("click", function () {
+  var username = authUsername.value.trim();
+  var password = authPassword.value;
+
+  if (!username || !password) {
+    authError.textContent = "Enter a username and password.";
+    return;
+  }
+
+  authError.textContent = "";
+  authSubmitBtn.disabled = true;
+
+  var endpoint = authMode === "login" ? "/login" : "/register";
+
+  fetch(AUTH_API_BASE + endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ username: username, password: password })
+  })
+    .then(function (res) {
+      return res.json().then(function (data) {
+        return { ok: res.ok, data: data };
+      });
+    })
+    .then(function (result) {
+      authSubmitBtn.disabled = false;
+      if (!result.ok) {
+        authError.textContent = result.data.error || "Something went wrong.";
+        return;
+      }
+      currentUser = result.data.username || username;
+      updateAuthBar();
+      closeAuthScreen();
+    })
+    .catch(function () {
+      authSubmitBtn.disabled = false;
+      authError.textContent = "Could not reach the server.";
+    });
+});
+
+function logoutUser() {
+  fetch(AUTH_API_BASE + "/logout", {
+    method: "POST",
+    credentials: "include"
+  }).finally(function () {
+    currentUser = null;
+    guessingMode = false;
+    guessToggleBtn.classList.remove("guessing-active");
+    updateAuthBar();
+  });
+}
+
+function updateAuthBar() {
+  var loginSpan = loginBtn.querySelector("span");
+  if (currentUser) {
+    loginBtn.classList.add("logged-in");
+    loginSpan.textContent = "OUT";
+    registerBtn.style.display = "none";
+    guessToggleBtn.style.display = "inline-block";
+  } else {
+    loginBtn.classList.remove("logged-in");
+    loginSpan.textContent = "L-I";
+    registerBtn.style.display = "inline-block";
+    guessToggleBtn.style.display = "none";
+  }
+}
+
+function checkSession() {
+  fetch(AUTH_API_BASE + "/me", {
+    method: "GET",
+    credentials: "include"
+  })
+    .then(function (res) {
+      if (!res.ok) return null;
+      return res.json();
+    })
+    .then(function (data) {
+      if (data && data.username) {
+        currentUser = data.username;
+        updateAuthBar();
+      }
+    })
+    .catch(function () {});
+}
+
+checkSession();
 
 </script>
 
