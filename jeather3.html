@@ -1795,19 +1795,18 @@
           return;
         }
         submitBtn.disabled = true;
+
+        // Use the actual text from the textarea and the currently active city
+        var postPayload = {
+          text: text,
+          city: window.currentActiveCity || null
+        };
+
         fetch(AUTH_API_BASE + "/post", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({
-            text: "Just made a guess in this city!",
-            city: "Paris",
-            weather: {
-              current: 21.5,
-              max: 24.0,
-              min: 16.2
-            }
-          })
+          body: JSON.stringify(postPayload)
         })
           .then(function (res) { return res.json().then(function (d) { return { ok: res.ok, data: d }; }); })
           .then(function (result) {
@@ -1816,7 +1815,7 @@
               errorDiv.textContent = result.data.error || "Failed to post.";
               return;
             }
-            fetchFeed();
+            fetchFeed(); // Refresh and show the feed with the new post
           })
           .catch(function () {
             submitBtn.disabled = false;
