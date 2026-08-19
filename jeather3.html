@@ -1059,6 +1059,17 @@
       word-wrap: break-word;
     }
 
+    /* Post Weather Badge Styling */
+    .post-weather-badge {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #cccccc;
+      letter-spacing: 1px;
+      background-color: #222222;
+      padding: 6px 10px;
+      border-left: 2px solid #ff2ec4;
+    }
+
     /* Mobile city-select vs weather screens */
     .change-btn {
       display: none;
@@ -1722,13 +1733,13 @@
       return diffDays + "d ago";
     }
 
-    // Example post rendering snippet
+    // Updated post rendering snippet with current weather details[cite: 7]
     function renderPost(post) {
       let weatherHtml = "";
       if (post.city && post.weather) {
         weatherHtml = `
           <div class="post-weather-badge">
-            Loc. <strong>${post.city}</strong> — 
+            Loc. <strong>${escapeHtml(post.city)}</strong> | 
             Current: ${post.weather.current}°C | 
             High: ${post.weather.max}°C | 
             Low: ${post.weather.min}°C
@@ -1737,11 +1748,11 @@
       }
 
       return `
-        <div class="post-card">
-          <span class="post-user">@${post.username}</span>
-          <p class="post-text">${escapeHtml(post.text)}</p>
+        <div class="feed-item">
+          <div class="feed-item-header"><span class="feed-item-user">@${escapeHtml(post.username)}</span><span class="feed-item-time">${timeAgo(post.createdAt)}</span></div>
+          ${post.city ? `<div class="feed-item-city">${escapeHtml(post.city.toUpperCase())}</div>` : ''}
+          <div class="feed-item-text">${escapeHtml(post.text)}</div>
           ${weatherHtml}
-          <span class="post-time">${new Date(post.createdAt).toLocaleString()}</span>
         </div>
       `;
     }
@@ -1796,7 +1807,6 @@
         }
         submitBtn.disabled = true;
 
-        // Use the actual text from the textarea and the currently active city
         var postPayload = {
           text: text,
           city: window.currentActiveCity || null
@@ -1815,7 +1825,7 @@
               errorDiv.textContent = result.data.error || "Failed to post.";
               return;
             }
-            fetchFeed(); // Refresh and show the feed with the new post
+            fetchFeed();
           })
           .catch(function () {
             submitBtn.disabled = false;
@@ -1847,13 +1857,7 @@
             html += '<div class="weather-placeholder">NO POSTS YET &mdash; FOLLOW SOMEONE OR POST SOMETHING</div>';
           } else {
             posts.forEach(function (p) {
-              html += '<div class="feed-item">';
-              html += '<div class="feed-item-header"><span class="feed-item-user">' + escapeHtml(p.username) + '</span><span class="feed-item-time">' + timeAgo(p.createdAt) + '</span></div>';
-              if (p.city) {
-                html += '<div class="feed-item-city">' + escapeHtml(p.city.toUpperCase()) + '</div>';
-              }
-              html += '<div class="feed-item-text">' + escapeHtml(p.text) + '</div>';
-              html += '</div>';
+              html += renderPost(p);
             });
           }
           html += '</div>';
@@ -2470,7 +2474,7 @@
     guessToggleBtn.addEventListener("click", function () {
       guessingMode = !guessingMode;
       guessToggleBtn.classList.remove("guessing-pulse");
-      void guessToggleBtn.offsetWidth; // trigger reflow for animation restart
+      void guessToggleBtn.offsetWidth;
       guessToggleBtn.classList.add("guessing-pulse");
       if (guessingMode) {
         guessToggleBtn.classList.add("guessing-active");
