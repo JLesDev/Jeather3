@@ -1002,8 +1002,11 @@ input[type="number"].auth-input::-webkit-outer-spin-button {
   }
 
   .auth-bar {
-    top: 14px;
-    right: 14px;
+    position: static;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    padding: 14px 20px 0 20px;
   }
 
   .auth-btn {
