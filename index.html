@@ -1,0 +1,2612 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Jeather3</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      background-color: #1a1a1a;
+      color: #ffffff;
+      font-family: Helvetica, Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    .wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      min-height: 100vh;
+      width: 100%;
+      position: relative;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 24px 48px;
+      flex: 1 1 50%;
+    }
+
+    .preview {
+      flex: 1 1 50%;
+      border-left: 1px solid #333333;
+      background-color: #111111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+    }
+
+    .preview *::selection {
+      background-color: var(--city-color, #ffffff);
+      color: #000000;
+    }
+
+    .header {
+      position: relative;
+      display: inline-block;
+      width: fit-content;
+      overflow: hidden;
+      font-size: 88px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-align: left;
+      line-height: 1.2;
+      padding-bottom: 10px;
+      z-index: 0;
+      cursor: default;
+    }
+
+    .header span {
+      position: relative;
+      z-index: 2;
+    }
+
+    .links {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .link-container {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .link {
+      position: relative;
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      text-decoration: none;
+      color: #ffffff;
+      padding: 10px 24px;
+      width: 100%;
+      text-align: left;
+      overflow: hidden;
+      background-color: transparent;
+      z-index: 0;
+      border: none;
+      font-family: Helvetica, Arial, sans-serif;
+      cursor: pointer;
+    }
+
+    .link span {
+      position: relative;
+      z-index: 2;
+    }
+
+    .fav-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 3;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .fav-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: #777777;
+      transition: fill 0.2s ease;
+    }
+
+    .fav-btn:hover svg {
+      fill: #ffffff;
+    }
+
+    .fav-btn.favorited svg {
+      fill: #ff2ec4;
+    }
+
+    .header::before,
+    .link::before,
+    .footer::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      transition: left 0.35s ease;
+    }
+
+    .header:hover::before,
+    .link:hover::before,
+    .link.active::before,
+    .footer:hover::before {
+      left: 0;
+    }
+
+    .header::before {
+      background-color: #ff2ec4;
+    }
+
+    .header:hover span {
+      color: #000000;
+    }
+
+    .link.melbourne {
+      --sweep: #a7c7f7;
+    }
+
+    .link.adelaide {
+      --sweep: #ffb36b;
+    }
+
+    .link.sydney {
+      --sweep: #fff09a;
+    }
+
+    .link.brisbane {
+      --sweep: #b5e8c5;
+    }
+
+    .link::before {
+      background-color: var(--sweep);
+    }
+
+    .link:hover span,
+    .link.active span {
+      color: #000000;
+    }
+
+    .nav-row {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .link.nav {
+      --sweep: #ff2ec4;
+      text-align: center;
+    }
+
+    .metro-button {
+      --sweep: #ff2ec4;
+      text-align: center;
+    }
+
+    .metro-button::before {
+      background-color: var(--sweep);
+    }
+
+    .metro-button:hover span,
+    .metro-button.active span {
+      color: #000000;
+    }
+
+    .regional-button {
+      --sweep: #d6c2ff;
+      text-align: center;
+    }
+
+    .regional-button::before {
+      background-color: var(--sweep);
+    }
+
+    .regional-button:hover span,
+    .regional-button.active span {
+      color: #000000;
+    }
+
+    .rural-button {
+      --sweep: #e6c280;
+      text-align: center;
+    }
+
+    .rural-button::before {
+      background-color: var(--sweep);
+    }
+
+    .rural-button:hover span,
+    .rural-button.active span {
+      color: #000000;
+    }
+
+    #extras>.link-container>.metro-button,
+    #extras>.link-container>.regional-button,
+    #extras>.link-container>.rural-button {
+      text-align: left;
+    }
+
+    .footer {
+      position: relative;
+      display: inline-block;
+      width: fit-content;
+      overflow: hidden;
+      margin-top: 60px;
+      font-size: 12px;
+      letter-spacing: 3px;
+      color: #777777;
+      text-transform: uppercase;
+      z-index: 0;
+      cursor: default;
+    }
+
+    .footer span {
+      position: relative;
+      z-index: 2;
+    }
+
+    .footer::before {
+      background-color: #ff2ec4;
+    }
+
+    .footer:hover span {
+      color: #000000;
+    }
+
+    .weather {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .weather-city {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    /* Sentiment Tracker Styles & Animations */
+    .sentiment-wrapper {
+      margin-top: 0px;
+      width: 100%;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .sentiment-container {
+      display: flex;
+      gap: 8px;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .sentiment-container.fade-out {
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+    }
+
+    .sentiment-btn {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s ease, transform 0.1s ease;
+    }
+
+    .sentiment-btn:hover {
+      opacity: 0.85;
+    }
+
+    .sentiment-btn:active {
+      transform: scale(0.95);
+    }
+
+    .sentiment-btn.great {
+      background-color: #9cb8f9;
+      color: #000000;
+    }
+
+    .sentiment-btn.good {
+      background-color: #b5e8c5;
+      color: #000000;
+    }
+
+    .sentiment-btn.bad {
+      background-color: #f3b8c8;
+      color: #000000;
+    }
+
+    /* Stacked Row Graph Styles */
+    .sentiment-stacked-graph {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s;
+    }
+
+    .sentiment-stacked-graph.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .stacked-track {
+      display: flex;
+      width: 100%;
+      height: 10px;
+      background-color: #222222;
+      overflow: hidden;
+    }
+
+    .stacked-segment {
+      height: 100%;
+      width: 0%;
+      transition: width 0.6s cubic-bezier(0.1, 1, 0.1, 1);
+    }
+
+    .stacked-segment.great {
+      background-color: #9cb8f9;
+    }
+
+    .stacked-segment.good {
+      background-color: #b5e8c5;
+    }
+
+    .stacked-segment.bad {
+      background-color: #f3b8c8;
+    }
+
+    .stacked-legend {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #888888;
+    }
+
+    .legend-item span {
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .weather-temp {
+      margin-top: 16px;
+      font-size: 72px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .weather-highlow {
+      margin-top: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      display: flex;
+      gap: 16px;
+    }
+
+    .weather-highlow span {
+      position: relative;
+      display: inline-block;
+      padding: 2px 6px;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .weather-highlow span::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--city-color, #a7c7f7);
+      opacity: 0.35;
+      z-index: 1;
+    }
+
+    .weather-highlow span b {
+      position: relative;
+      z-index: 2;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .weather-feels {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #ffffff;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .weather-diff {
+      margin-top: 4px;
+      font-size: 14px;
+      color: #aaaaaa;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .weather-stats {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .weather-stat {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      letter-spacing: 1px;
+      padding-bottom: 10px;
+    }
+
+    .weather-stat-label {
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .weather-chart {
+      margin-top: 32px;
+    }
+
+    .weather-chart svg {
+      width: 100%;
+      height: 100px;
+      display: block;
+    }
+
+    .weather-quote {
+      margin-top: 32px;
+      font-size: 14px;
+      color: #ffffff;
+      letter-spacing: 1px;
+      line-height: 1.5;
+    }
+
+    .weather-placeholder {
+      color: #444444;
+      font-size: 14px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .weather-error {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .weather-error-title {
+      font-size: 40px;
+      font-weight: 700;
+      color: #ff5c5c;
+      letter-spacing: 1px;
+    }
+
+    .weather-error-last {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #ffffff;
+      letter-spacing: 1px;
+    }
+
+    .notify-buttons {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .notify-button {
+      position: relative;
+      overflow: hidden;
+      font-size: 14px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #ffffff;
+      background-color: transparent;
+      border: none;
+      padding: 14px 20px;
+      text-align: left;
+      cursor: pointer;
+      font-family: Helvetica, Arial, sans-serif;
+      z-index: 0;
+    }
+
+    .notify-button span {
+      position: relative;
+      z-index: 2;
+    }
+
+    .notify-button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background-color: #ff5c5c;
+      z-index: 1;
+      transition: left 0.35s ease;
+    }
+
+    .notify-button:hover::before,
+    .notify-button.sent::before {
+      left: 0;
+    }
+
+    .notify-button:hover span,
+    .notify-button.sent span {
+      color: #000000;
+    }
+
+    /* Auth buttons (top right) */
+    .auth-bar {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      display: flex;
+      gap: 8px;
+      z-index: 50;
+    }
+
+    .auth-btn {
+      position: relative;
+      overflow: hidden;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #ffffff;
+      background-color: transparent;
+      border: none;
+      padding: 8px 14px;
+      cursor: pointer;
+      z-index: 0;
+    }
+
+    .auth-btn span {
+      position: relative;
+      z-index: 2;
+    }
+
+    .auth-btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background-color: #ff2ec4;
+      z-index: 1;
+      transition: left 0.35s ease;
+    }
+
+    .auth-btn:hover::before {
+      left: 0;
+    }
+
+    .auth-btn:hover span {
+      color: #000000;
+    }
+
+    .auth-btn.logged-in span {
+      color: #b5e8c5;
+    }
+
+    .auth-btn.guessing-active {
+      background-color: #ff2ec4;
+    }
+
+    .auth-btn.guessing-active span {
+      color: #000000;
+    }
+
+    .auth-btn.guessing-active::before {
+      left: 0;
+      background-color: #ffffff;
+    }
+
+    .auth-btn.guessing-active:hover span {
+      color: #ff2ec4;
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 46, 196, 0.7);
+      }
+
+      50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 16px 4px rgba(255, 46, 196, 0.9);
+      }
+
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 46, 196, 0);
+      }
+    }
+
+    .auth-btn.guessing-pulse {
+      animation: pulseGlow 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Full-screen auth view (no floating box) */
+    .content,
+    .preview,
+    .auth-bar {
+      transition: opacity 0.45s cubic-bezier(0.6, 0, 0.9, 0.2),
+        transform 0.45s cubic-bezier(0.6, 0, 0.9, 0.2),
+        filter 0.45s ease;
+    }
+
+    body.auth-hiding .content,
+    body.auth-hiding .preview,
+    body.auth-hiding .auth-bar {
+      opacity: 0;
+      transform: scale(0.94) translateY(-18px);
+      filter: blur(8px);
+      pointer-events: none;
+    }
+
+    body.auth-open .content,
+    body.auth-open .preview,
+    body.auth-open .auth-bar {
+      display: none;
+    }
+
+    body.auth-open .auth-view {
+      display: flex;
+    }
+
+    .auth-view {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      padding: 24px 48px;
+      flex: 1 1 100%;
+    }
+
+    .auth-view>* {
+      opacity: 0;
+      transform: translateY(24px);
+      filter: blur(6px);
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+        filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .auth-view.visible>* {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+
+    .auth-view.visible>*:nth-child(1) {
+      transition-delay: 0.05s;
+    }
+
+    .auth-view.visible>*:nth-child(2) {
+      transition-delay: 0.15s;
+    }
+
+    .auth-view.visible>*:nth-child(3) {
+      transition-delay: 0.24s;
+    }
+
+    .auth-view.visible>*:nth-child(4) {
+      transition-delay: 0.32s;
+    }
+
+    .auth-view .header::before {
+      background-color: #b5e8c5;
+    }
+
+    .auth-view .links {
+      max-width: 400px;
+    }
+
+    .auth-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .auth-field-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .auth-label {
+      display: block;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+
+    .auth-input {
+      background-color: transparent;
+      border: 1px solid #333333;
+      color: #ffffff;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      padding: 10px 24px;
+      width: 100%;
+      text-align: left;
+      transition: border-color 0.2s ease;
+    }
+
+    .auth-input:focus {
+      outline: none;
+      border-color: #ff2ec4;
+    }
+
+    /* Completely custom styled number input spinners */
+    input[type="number"].auth-input {
+      -moz-appearance: textfield;
+    }
+
+    input[type="number"].auth-input::-webkit-inner-spin-button,
+    input[type="number"].auth-input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      margin: 0;
+    }
+
+    .auth-input-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .auth-input-wrapper .auth-input {
+      padding-right: 56px;
+    }
+
+    .number-spin-controls {
+      position: absolute;
+      right: 1px;
+      top: 1px;
+      bottom: 1px;
+      width: 40px;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid #333333;
+      background-color: #111111;
+      z-index: 3;
+    }
+
+    .spin-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: background-color 0.2s ease;
+    }
+
+    .spin-btn:first-child {
+      border-bottom: 1px solid #333333;
+    }
+
+    .spin-btn svg {
+      width: 12px;
+      height: 12px;
+      stroke: #ff2ec4;
+      stroke-width: 2.5;
+      fill: none;
+    }
+
+    .spin-btn:hover {
+      background-color: rgba(255, 46, 196, 0.1);
+    }
+
+    .auth-error {
+      color: #ff5c5c;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+      margin-bottom: 4px;
+      min-height: 16px;
+    }
+
+    /* Leaderboard Stylised Container */
+    .leaderboard-view {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .leaderboard-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      margin-top: 40px;
+    }
+
+    .leaderboard-item {
+      position: relative;
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      color: #ffffff;
+      padding: 10px 24px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      overflow: hidden;
+      background-color: transparent;
+      border: none;
+      z-index: 0;
+      cursor: default;
+    }
+
+    .leaderboard-item span {
+      position: relative;
+      z-index: 2;
+    }
+
+    .leaderboard-item::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background-color: #ff2ec4;
+      z-index: 1;
+      transition: left 0.35s ease;
+    }
+
+    .leaderboard-item:hover::before {
+      left: 0;
+    }
+
+    .leaderboard-item:hover span {
+      color: #000000;
+    }
+
+    .leaderboard-header-row {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #777777;
+      text-transform: uppercase;
+      padding: 0 24px;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .leaderboard-item-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .follow-btn {
+      position: relative;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border: 1px solid #ff2ec4;
+      background-color: transparent;
+      color: #ff2ec4;
+      cursor: pointer;
+      z-index: 3;
+      white-space: nowrap;
+      transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+    }
+
+    .follow-btn:hover {
+      opacity: 0.85;
+    }
+
+    .follow-btn.following {
+      background-color: #ff2ec4;
+      color: #000000;
+    }
+
+    .follow-btn:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    .search-results {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      margin-top: 24px;
+      min-height: 20px;
+    }
+
+    /* Post composer & Feed */
+    .post-textarea {
+      background-color: transparent;
+      border: 1px solid #333333;
+      color: #ffffff;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      padding: 14px 18px;
+      width: 100%;
+      min-height: 120px;
+      resize: vertical;
+      transition: border-color 0.2s ease;
+    }
+
+    .post-textarea:focus {
+      outline: none;
+      border-color: #ff2ec4;
+    }
+
+    .post-char-count {
+      margin-top: 6px;
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: #777777;
+      text-align: right;
+    }
+
+    .feed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      width: 100%;
+      margin-top: 24px;
+      max-width: 420px;
+    }
+
+    .feed-item {
+      border-bottom: 1px solid #333333;
+      padding-bottom: 16px;
+    }
+
+    .feed-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 14px;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .feed-item-user {
+      font-weight: 700;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .feed-item-time {
+      font-size: 11px;
+      color: #777777;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .feed-item-city {
+      font-size: 11px;
+      color: #aaaaaa;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .feed-item-text {
+      font-size: 16px;
+      line-height: 1.5;
+      color: #ffffff;
+      word-wrap: break-word;
+    }
+
+    /* Post Weather Badge Styling */
+    .post-weather-badge {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #cccccc;
+      letter-spacing: 1px;
+      background-color: #222222;
+      padding: 6px 10px;
+      border-left: 2px solid #ff2ec4;
+    }
+
+    /* Mobile city-select vs weather screens */
+    .change-btn {
+      display: none;
+      position: relative;
+      overflow: hidden;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #ffffff;
+      background-color: transparent;
+      border: none;
+      padding: 10px 16px;
+      cursor: pointer;
+      z-index: 0;
+      margin-top: 16px;
+    }
+
+    .change-btn span {
+      position: relative;
+      z-index: 2;
+    }
+
+    .change-btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background-color: #ff2ec4;
+      z-index: 1;
+      transition: left 0.35s ease;
+    }
+
+    .change-btn:hover::before {
+      left: 0;
+    }
+
+    .change-btn:hover span {
+      color: #000000;
+    }
+
+    .mobile-weather-header {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        font-size: 48px;
+      }
+
+      .link {
+        font-size: 18px;
+      }
+
+      .wrapper {
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .content {
+        flex: 1 1 100%;
+        min-height: 100vh;
+        justify-content: flex-start;
+        padding: 20px;
+        width: 100%;
+      }
+
+      .links {
+        margin-top: 12px;
+      }
+
+      #extras {
+        margin-top: 8px;
+      }
+
+      .footer {
+        margin-top: 24px;
+      }
+
+      .preview {
+        flex: none;
+        border-left: none;
+        border-top: 1px solid #333333;
+        min-height: 60vh;
+        padding: 24px;
+      }
+
+      .weather-temp {
+        font-size: 56px;
+      }
+
+      .auth-bar {
+        position: static;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        width: 100%;
+        padding: 14px 20px 0 20px;
+      }
+
+      .auth-btn {
+        font-size: 11px;
+        padding: 6px 10px;
+      }
+
+      body.mobile-weather-view .content {
+        display: none;
+      }
+
+      body.mobile-weather-view .mobile-weather-header {
+        display: flex;
+      }
+
+      body.mobile-weather-view .mobile-weather-header .change-btn {
+        display: inline-block;
+        margin-top: 0;
+      }
+
+      body.mobile-weather-view .preview {
+        border-top: none;
+        min-height: 100vh;
+        flex: 1 1 100%;
+      }
+
+      body.mobile-weather-view .auth-bar {
+        display: none;
+      }
+
+      .mobile-weather-header {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 20px 16px 20px;
+      }
+
+      .mobile-weather-header .mobile-header-title {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="wrapper">
+
+    <div class="auth-bar" id="authBar">
+      <button class="auth-btn" id="feedBarBtn" style="display:none;" title="Feed"><span>Feed</span></button>
+      <button class="auth-btn" id="postBarBtn" style="display:none;" title="New Post"><span>Post</span></button>
+      <button class="auth-btn" id="searchBarBtn" title="Search Users"><span>Search</span></button>
+      <button class="auth-btn" id="leaderboardBarBtn" title="Leaderboard"><span>Leaderboard</span></button>
+      <button class="auth-btn" id="guessToggleBtn" style="display:none;" title="Guessing Mode"><span>G</span></button>
+      <button class="auth-btn" id="loginBtn"><span>L-I</span></button>
+      <button class="auth-btn" id="registerBtn"><span>R</span></button>
+    </div>
+
+    <div class="mobile-weather-header" id="mobileWeatherHeader">
+      <div class="mobile-header-title">Jeather 3</div>
+      <button class="change-btn" id="changeCityBtn"><span>Change</span></button>
+    </div>
+
+    <div class="content">
+
+      <div class="header"><span>Jeather3</span></div>
+
+      <div class="links" id="links"></div>
+
+      <div class="links" id="extras"></div>
+
+      <div class="footer"><span>data by bom</span></div>
+
+    </div>
+
+    <div class="preview" id="preview">
+    </div>
+
+    <div class="auth-view" id="authView">
+      <div class="header" id="authTitle"><span>Log-In</span></div>
+
+      <div class="links">
+        <div class="auth-field-group">
+          <label class="auth-label" for="authUsername">Username</label>
+          <input type="text" class="auth-input" id="authUsername" autocomplete="username">
+        </div>
+        <div class="auth-field-group">
+          <label class="auth-label" for="authPassword">Password</label>
+          <input type="password" class="auth-input" id="authPassword" autocomplete="current-password">
+        </div>
+      </div>
+
+      <div class="auth-error" id="authError"></div>
+
+      <div class="links">
+        <div class="link-container">
+          <button class="link nav" id="authSubmitBtn"><span>Log In</span></button>
+        </div>
+        <div class="link-container">
+          <button class="link nav" id="authBackBtn"><span>Back</span></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+
+    var AUTH_API_BASE = "https://jeather3.jontyleslie.workers.dev";
+    var heartSvgString = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+
+    var quotes = [
+      "If you're offered a seat on a rocket ship, don't ask what seat. Just get on. Sheryl Sandberg",
+      "First, have a definite, clear practical ideal; a goal, an objective. Aristotle",
+      "If the wind will not serve, take to the oars. Latin Proverb",
+      "You can't fall if you don't climb. But there's no joy in living your whole life on the ground. Unknown",
+      "We must believe that we are gifted for something. Marie Curie",
+      "Too many of us are not living our dreams because we are living our fears. Les Brown",
+      "Challenges are what make life interesting and overcoming them is what makes life meaningful. Joshua J. Marine",
+      "If you want to lift yourself up, lift up someone else. Booker T. Washington",
+      "Knowing is not enough; we must apply. Being willing is not enough; we must do. Leonardo da Vinci",
+      "Limitations live only in our minds. Jamie Paolinetti",
+      "A person who never made a mistake never tried anything new. Albert Einstein",
+      "The person who says it cannot be done should not interrupt the person who is doing it. Chinese Proverb",
+      "There are no traffic jams along the extra mile. Roger Staubach",
+      "It is never too late to be what you might have been. George Eliot",
+      "You become what you believe. Oprah Winfrey",
+      "I would rather die of passion than of boredom. Vincent van Gogh",
+      "It does not matter how slowly you go as long as you do not stop. Confucius",
+      "Dream big and dare to fail. Norman Vaughan",
+      "Do what you can, where you are, with what you have. Teddy Roosevelt",
+      "Dreaming, after all, is a form of planning. Gloria Steinem",
+      "Remember no one can make you feel inferior without your consent. Eleanor Roosevelt",
+      "Change your thoughts and you change your world. Norman Vincent Peale",
+      "The only way to do great work is to love what you do. Steve Jobs",
+      "If you can dream it, you can achieve it. Zig Ziglar"
+    ];
+
+    var preview = document.getElementById("preview");
+    var guessingMode = false;
+
+    function isMobile() {
+      return window.innerWidth <= 600;
+    }
+
+    function randomQuote() {
+      return quotes[Math.floor(Math.random() * quotes.length)];
+    }
+
+    function buildSparkline(hours) {
+      var temps = hours.map(function (h) { return h.temp; });
+      var min = Math.min.apply(null, temps);
+      var max = Math.max.apply(null, temps);
+      var range = max - min === 0 ? 1 : max - min;
+      var width = 400;
+      var height = 100;
+      var step = width / (temps.length - 1);
+      var points = temps.map(function (t, i) {
+        var x = i * step;
+        var y = height - ((t - min) / range) * (height - 20) - 10;
+        return x + "," + y;
+      }).join(" ");
+      return '<svg viewBox="0 0 ' + width + ' ' + height + '" preserveAspectRatio="none">' +
+        '<polyline points="' + points + '" fill="none" stroke="#ffffff" stroke-width="2"/>' +
+        '</svg>';
+    }
+
+    function getSentimentStorageKey(cityName) {
+      return "sentiment_" + cityName.toLowerCase().replace(/[^a-z]/g, "_") + "_" + new Date().toISOString().slice(0, 10);
+    }
+
+    function getUserVoteKey(cityName) {
+      return "voted_" + cityName.toLowerCase().replace(/[^a-z]/g, "_") + "_" + new Date().toISOString().slice(0, 10);
+    }
+
+    function getSentimentData(cityName) {
+      try {
+        var data = localStorage.getItem(getSentimentStorageKey(cityName));
+        if (data) return JSON.parse(data);
+      } catch (e) { }
+      return { great: 0, good: 0, bad: 0 };
+    }
+
+    function saveSentimentData(cityName, counts) {
+      try {
+        localStorage.setItem(getSentimentStorageKey(cityName), JSON.stringify(counts));
+      } catch (e) { }
+    }
+
+    function hasUserVoted(cityName) {
+      try {
+        return localStorage.getItem(getUserVoteKey(cityName)) === "true";
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function setUserVoted(cityName) {
+      try {
+        localStorage.setItem(getUserVoteKey(cityName), "true");
+      } catch (e) { }
+    }
+
+    function getStackedGraphHTML(stats, isAlreadyVoted) {
+      var total = stats.great + stats.good + stats.bad;
+      var greatPct = total === 0 ? 0 : Math.round((stats.great / total) * 100);
+      var goodPct = total === 0 ? 0 : Math.round((stats.good / total) * 100);
+      var badPct = total === 0 ? 0 : (100 - greatPct - goodPct);
+
+      var html = '';
+      html += '<div class="sentiment-stacked-graph ' + (isAlreadyVoted ? 'visible' : '') + '" id="sentiment-graph-' + cityClass(window.currentActiveCity || '') + '">';
+      html += '<div class="stacked-track">';
+      html += '<div class="stacked-segment great" style="width: ' + (isAlreadyVoted ? greatPct : 0) + '%;"></div>';
+      html += '<div class="stacked-segment good" style="width: ' + (isAlreadyVoted ? goodPct : 0) + '%;"></div>';
+      html += '<div class="stacked-segment bad" style="width: ' + (isAlreadyVoted ? badPct : 0) + '%;"></div>';
+      html += '</div>';
+      html += '<div class="stacked-legend">';
+      html += '<div class="legend-item">Great: <span>' + greatPct + '%</span></div>';
+      html += '<div class="legend-item">Good: <span>' + goodPct + '%</span></div>';
+      html += '<div class="legend-item">Bad: <span>' + badPct + '%</span></div>';
+      html += '</div>';
+      html += '</div>';
+      return html;
+    }
+
+    window.currentActiveCity = '';
+
+    function renderWeather(city, current, hours, dailyMin, dailyMax, climate) {
+      window.currentActiveCity = city;
+      var html = '';
+      html += '<div class="weather">';
+      html += '<div class="weather-city">' + city.toUpperCase() + '</div>';
+
+      var voted = hasUserVoted(city);
+      var stats = getSentimentData(city);
+
+      html += '<div class="sentiment-wrapper">';
+      html += '<div class="sentiment-container ' + (voted ? 'fade-out' : '') + '" id="sentiment-interactive-' + cityClass(city) + '">';
+      html += '<button class="sentiment-btn great" onclick="handleVote(\'' + city + '\', \'great\')">Great</button>';
+      html += '<button class="sentiment-btn good" onclick="handleVote(\'' + city + '\', \'good\')">Good</button>';
+      html += '<button class="sentiment-btn bad" onclick="handleVote(\'' + city + '\', \'bad\')">Bad</button>';
+      html += '</div>';
+
+      html += getStackedGraphHTML(stats, voted);
+      html += '</div>';
+
+      html += '<div class="weather-temp">' + Math.round(current.temp) + '&deg;C</div>';
+      if (dailyMin !== null && dailyMin !== undefined && dailyMax !== null && dailyMax !== undefined) {
+        html += '<div class="weather-highlow">';
+        html += '<span><b>Max: ' + Math.round(dailyMax) + '&deg;C</b></span>';
+        html += '<span><b>Min: ' + Math.round(dailyMin) + '&deg;C</b></span>';
+        html += '</div>';
+      }
+      html += '<div class="weather-feels">Jonty would feel like ' + Math.round(current.temp_feels_like + 2) + '&deg;C</div>';
+
+      if (climate && climate.max_mean !== undefined && dailyMax !== null && dailyMax !== undefined) {
+        var diff = Math.round(dailyMax - climate.max_mean);
+        if (diff > 0) {
+          html += '<div class="weather-diff">Today is ' + diff + '&deg; warmer than average</div>';
+        } else if (diff < 0) {
+          html += '<div class="weather-diff">Today is ' + Math.abs(diff) + '&deg; cooler than average</div>';
+        } else {
+          html += '<div class="weather-diff">Today is right on average</div>';
+        }
+      }
+
+      html += '<div class="weather-stats">';
+      html += '<div class="weather-stat"><span class="weather-stat-label">Humidity</span><span>' + current.relative_humidity + '%</span></div>';
+      html += '<div class="weather-stat"><span class="weather-stat-label">UV</span><span>' + current.uv + '</span></div>';
+      html += '<div class="weather-stat"><span class="weather-stat-label">Wind</span><span>' + current.wind.speed_kilometre + 'km/h ' + current.wind.direction + '</span></div>';
+      var rainAvg = ((current.rain.amount.min + current.rain.amount.max) / 2).toFixed(1);
+      html += '<div class="weather-stat"><span class="weather-stat-label">Rain</span><span>' + rainAvg + 'mm</span></div>';
+      html += '</div>';
+      html += '<div class="weather-chart">' + buildSparkline(hours) + '</div>';
+      html += '<div class="weather-quote">' + randomQuote() + '</div>';
+      if (isMobile()) {
+        html += '<button class="change-btn" style="display:inline-block;" onclick="exitMobileWeatherView()"><span>Change</span></button>';
+      }
+      html += '</div>';
+      preview.innerHTML = html;
+    }
+
+    window.handleVote = function (city, type) {
+      if (hasUserVoted(city)) return;
+
+      setUserVoted(city);
+      var stats = getSentimentData(city);
+      if (type === 'great') stats.great++;
+      if (type === 'good') stats.good++;
+      if (type === 'bad') stats.bad++;
+      saveSentimentData(city, stats);
+
+      var interactiveEl = document.getElementById('sentiment-interactive-' + cityClass(city));
+      var graphEl = document.getElementById('sentiment-graph-' + cityClass(city));
+
+      if (interactiveEl) {
+        interactiveEl.classList.add('fade-out');
+      }
+
+      if (graphEl) {
+        var total = stats.great + stats.good + stats.bad;
+        var greatPct = total === 0 ? 0 : Math.round((stats.great / total) * 100);
+        var goodPct = total === 0 ? 0 : Math.round((stats.good / total) * 100);
+        var badPct = total === 0 ? 0 : (100 - greatPct - goodPct);
+
+        graphEl.classList.add('visible');
+        var segs = graphEl.getElementsByClassName('stacked-segment');
+        if (segs.length >= 3) {
+          segs[0].style.width = greatPct + '%';
+          segs[1].style.width = goodPct + '%';
+          segs[2].style.width = badPct + '%';
+        }
+
+        var legends = graphEl.getElementsByClassName('legend-item');
+        if (legends.length >= 3) {
+          legends[0].innerHTML = 'Great: <span>' + greatPct + '%</span>';
+          legends[1].innerHTML = 'Good: <span>' + goodPct + '%</span>';
+          legends[2].innerHTML = 'Bad: <span>' + badPct + '%</span>';
+        }
+      }
+    };
+
+    function renderGuessPrompt(city, actualTemp) {
+      window.currentActiveCity = city;
+      var html = '';
+      html += '<div class="auth-view visible" style="display:flex; padding:0; flex:1 1 100%;">';
+      html += '<div class="header"><span>Guess temperature</span></div>';
+      html += '<div class="links">';
+      html += '<div class="auth-field-group">';
+      html += '<label class="auth-label" for="tempGuessInput">' + city.toUpperCase() + ' TEMP (&deg;C)</label>';
+      html += '<div class="auth-input-wrapper">';
+      html += '<input type="number" class="auth-input" id="tempGuessInput" placeholder="Enter guess">';
+      html += '<div class="number-spin-controls">';
+      html += '<button type="button" class="spin-btn" id="spinUp"><svg viewBox="0 0 24 24"><path d="m18 15-6-6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+      html += '<button type="button" class="spin-btn" id="spinDown"><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+      html += '</div>';
+      html += '</div>';
+      html += '</div>';
+      html += '</div>';
+      html += '<div class="auth-error" id="guessError"></div>';
+      html += '<div class="links">';
+      html += '<div class="link-container">';
+      html += '<button class="link nav" id="submitGuessBtn"><span>Submit Guess</span></button>';
+      html += '</div>';
+      html += '</div>';
+      html += '</div>';
+      preview.innerHTML = html;
+
+      var input = document.getElementById("tempGuessInput");
+      var submitBtn = document.getElementById("submitGuessBtn");
+      var errorDiv = document.getElementById("guessError");
+      var spinUp = document.getElementById("spinUp");
+      var spinDown = document.getElementById("spinDown");
+      input.focus();
+
+      spinUp.addEventListener("click", function () {
+        if (input.value === "") {
+          input.value = "20";
+        } else {
+          input.value = Number(input.value) + 1;
+        }
+      });
+
+      spinDown.addEventListener("click", function () {
+        if (input.value === "") {
+          input.value = "20";
+        } else {
+          input.value = Number(input.value) - 1;
+        }
+      });
+
+      submitBtn.addEventListener("click", function () {
+        var val = Number(input.value);
+        if (!Number.isFinite(val)) {
+          errorDiv.textContent = "Please enter a valid temperature number.";
+          return;
+        }
+        submitBtn.disabled = true;
+        fetch(AUTH_API_BASE + "/guess", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ city: city, guess: val, actual: actualTemp })
+        })
+          .then(function (res) { return res.json().then(function (d) { return { ok: res.ok, data: d }; }); })
+          .then(function (result) {
+            if (!result.ok) {
+              errorDiv.textContent = result.data.error || "Failed to submit guess.";
+              submitBtn.disabled = false;
+              return;
+            }
+            var score = result.data.score;
+            var avg = Math.round(result.data.average * 10) / 10;
+
+            var resHtml = '';
+            resHtml += '<div class="weather">';
+            resHtml += '<div class="weather-city">RESULT</div>';
+            resHtml += '<div class="weather-temp">' + score + ' <span style="font-size:24px;">/ 1000 pts</span></div>';
+            resHtml += '<div class="weather-highlow" style="margin-top:16px;"><span>Actual: <b>' + Math.round(actualTemp) + '&deg;C</b></span><span>Your Guess: <b>' + val + '&deg;C</b></span></div>';
+            resHtml += '<div class="weather-feels" style="margin-top:16px;">Your Running Average: ' + avg + ' pts</div>';
+            resHtml += '<button class="change-btn" style="display:inline-block; margin-top:24px;" onclick="fetchLeaderboard()"><span>View Leaderboard</span></button>';
+            resHtml += '</div>';
+            preview.innerHTML = resHtml;
+          })
+          .catch(function () {
+            errorDiv.textContent = "Network error submitting guess.";
+            submitBtn.disabled = false;
+          });
+      });
+    }
+
+    function followButtonHTML(username, isFollowing, isSelf) {
+      if (isSelf || !currentUser) return '';
+      return '<button class="follow-btn' + (isFollowing ? ' following' : '') +
+        '" onclick="event.stopPropagation(); toggleFollow(this, \'' + username.replace(/'/g, "\\'") + '\', ' + !!isFollowing + ')">' +
+        '<span>' + (isFollowing ? 'Following' : 'Follow') + '</span></button>';
+    }
+
+    window.toggleFollow = function (btn, username, currentlyFollowing) {
+      var endpoint = currentlyFollowing ? "/unfollow" : "/follow";
+      btn.disabled = true;
+      fetch(AUTH_API_BASE + endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ username: username })
+      })
+        .then(function (res) { return res.json().then(function (d) { return { ok: res.ok, data: d }; }); })
+        .then(function (result) {
+          btn.disabled = false;
+          if (!result.ok) return;
+          var nowFollowing = !currentlyFollowing;
+          btn.setAttribute("onclick", "event.stopPropagation(); toggleFollow(this, '" + username.replace(/'/g, "\\'") + "', " + nowFollowing + ")");
+          btn.querySelector("span").textContent = nowFollowing ? "Following" : "Follow";
+          if (nowFollowing) {
+            btn.classList.add("following");
+          } else {
+            btn.classList.remove("following");
+          }
+        })
+        .catch(function () {
+          btn.disabled = false;
+        });
+    };
+
+    function fetchLeaderboard() {
+      fetch(AUTH_API_BASE + "/leaderboard", {
+        method: "GET",
+        credentials: "include"
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          var entries = data.leaderboard || [];
+          var html = '';
+          html += '<div class="leaderboard-view">';
+          html += '<div class="weather-city">LEADERBOARD</div>';
+          html += '<div class="leaderboard-list">';
+          html += '<div class="leaderboard-header-row"><span>User</span><span>Avg</span></div>';
+          if (entries.length === 0) {
+            html += '<div class="leaderboard-item"><span>No guesses yet!</span><span>-</span></div>';
+          } else {
+            entries.forEach(function (e) {
+              html += '<div class="leaderboard-item">';
+              html += '<span>' + e.username + '</span>';
+              html += '<span class="leaderboard-item-right"><span>' + Math.round(e.average) + ' pts</span>' + followButtonHTML(e.username, e.isFollowing, e.isSelf) + '</span>';
+              html += '</div>';
+            });
+          }
+          html += '</div>';
+          html += '<button class="change-btn" style="display:inline-block; margin-top:24px;" onclick="exitMobileWeatherView()"><span>Back</span></button>';
+          html += '</div>';
+          preview.innerHTML = html;
+        })
+        .catch(function () {
+          preview.innerHTML = '<div class="weather-placeholder">FAILED TO LOAD LEADERBOARD</div>';
+        });
+    }
+
+    function renderSearchView() {
+      window.currentActiveCity = '';
+      var html = '';
+      html += '<div class="leaderboard-view">';
+      html += '<div class="weather-city">FIND USERS</div>';
+      html += '<div class="links" style="margin-top:20px;">';
+      html += '<div class="link-container">';
+      html += '<input type="text" class="auth-input" id="userSearchInput" placeholder="Search username" autocomplete="off">';
+      html += '</div>';
+      html += '</div>';
+      html += '<div class="search-results" id="userSearchResults"></div>';
+      html += '<button class="change-btn" style="display:inline-block; margin-top:24px;" onclick="exitMobileWeatherView()"><span>Back</span></button>';
+      html += '</div>';
+      preview.innerHTML = html;
+
+      var input = document.getElementById("userSearchInput");
+      var resultsEl = document.getElementById("userSearchResults");
+      var debounceTimer = null;
+
+      input.addEventListener("input", function () {
+        var q = input.value.trim();
+        clearTimeout(debounceTimer);
+        if (!q) {
+          resultsEl.innerHTML = '';
+          return;
+        }
+        debounceTimer = setTimeout(function () {
+          runUserSearch(q, resultsEl);
+        }, 300);
+      });
+
+      input.focus();
+    }
+
+    function runUserSearch(q, resultsEl) {
+      resultsEl.innerHTML = '<div class="weather-placeholder">SEARCHING&hellip;</div>';
+      fetch(AUTH_API_BASE + "/search?q=" + encodeURIComponent(q), {
+        method: "GET",
+        credentials: "include"
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          var users = data.users || [];
+          if (users.length === 0) {
+            resultsEl.innerHTML = '<div class="weather-placeholder">NO USERS FOUND</div>';
+            return;
+          }
+          var html = '';
+          users.forEach(function (u) {
+            html += '<div class="leaderboard-item">';
+            html += '<span>' + u.username + '</span>';
+            html += '<span class="leaderboard-item-right">' + followButtonHTML(u.username, u.isFollowing, u.isSelf) + '</span>';
+            html += '</div>';
+          });
+          resultsEl.innerHTML = html;
+        })
+        .catch(function () {
+          resultsEl.innerHTML = '<div class="weather-placeholder">SEARCH FAILED</div>';
+        });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function timeAgo(isoString) {
+      var then = new Date(isoString).getTime();
+      var diffSeconds = Math.max(0, Math.round((Date.now() - then) / 1000));
+      if (diffSeconds < 60) return "just now";
+      var diffMinutes = Math.round(diffSeconds / 60);
+      if (diffMinutes < 60) return diffMinutes + "m ago";
+      var diffHours = Math.round(diffMinutes / 60);
+      if (diffHours < 24) return diffHours + "h ago";
+      var diffDays = Math.round(diffHours / 24);
+      return diffDays + "d ago";
+    }
+
+    // Updated post rendering snippet with current weather details[cite: 7]
+    function renderPost(post) {
+      let weatherHtml = "";
+      if (post.city && post.weather) {
+        weatherHtml = `
+          <div class="post-weather-badge">
+            Loc. <strong>${escapeHtml(post.city)}</strong> | 
+            Current: ${post.weather.current}°C | 
+            High: ${post.weather.max}°C | 
+            Low: ${post.weather.min}°C
+          </div>
+        `;
+      }
+
+      return `
+        <div class="feed-item">
+          <div class="feed-item-header"><span class="feed-item-user">@${escapeHtml(post.username)}</span><span class="feed-item-time">${timeAgo(post.createdAt)}</span></div>
+          ${post.city ? `<div class="feed-item-city">${escapeHtml(post.city.toUpperCase())}</div>` : ''}
+          <div class="feed-item-text">${escapeHtml(post.text)}</div>
+          ${weatherHtml}
+        </div>
+      `;
+    }
+
+    function renderPostComposer() {
+      var cityLabel = window.currentActiveCity ? window.currentActiveCity.toUpperCase() : '';
+      var postCity = window.currentActiveCity || null;
+
+      var html = '';
+      html += '<div class="leaderboard-view">';
+      html += '<div class="weather-city">NEW POST</div>';
+      if (cityLabel) {
+        html += '<div class="feed-item-city" style="margin-top:12px;">Posting from ' + cityLabel + '</div>';
+      }
+      html += '<div class="links" style="margin-top:20px;">';
+      html += '<div class="link-container">';
+      html += '<textarea class="post-textarea" id="postTextInput" maxlength="280" placeholder="What\'s the weather doing?"></textarea>';
+      html += '</div>';
+      html += '</div>';
+      html += '<div class="post-char-count" id="postCharCount">280 characters left</div>';
+      html += '<div class="auth-error" id="postError"></div>';
+      html += '<div class="links">';
+      html += '<div class="link-container">';
+      html += '<button class="link nav" id="submitPostBtn"><span>Post</span></button>';
+      html += '</div>';
+      html += '<div class="link-container">';
+      html += '<button class="link nav" id="cancelPostBtn"><span>Cancel</span></button>';
+      html += '</div>';
+      html += '</div>';
+      html += '</div>';
+      preview.innerHTML = html;
+
+      var textarea = document.getElementById("postTextInput");
+      var charCount = document.getElementById("postCharCount");
+      var errorDiv = document.getElementById("postError");
+      var submitBtn = document.getElementById("submitPostBtn");
+      var cancelBtn = document.getElementById("cancelPostBtn");
+
+      textarea.addEventListener("input", function () {
+        charCount.textContent = (280 - textarea.value.length) + " characters left";
+      });
+
+      cancelBtn.addEventListener("click", function () {
+        fetchFeed();
+      });
+
+      submitBtn.addEventListener("click", function () {
+        var text = textarea.value.trim();
+        if (!text) {
+          errorDiv.textContent = "Write something first.";
+          return;
+        }
+        submitBtn.disabled = true;
+
+        var postPayload = {
+          text: text,
+          city: window.currentActiveCity || null
+        };
+
+        fetch(AUTH_API_BASE + "/post", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(postPayload)
+        })
+          .then(function (res) { return res.json().then(function (d) { return { ok: res.ok, data: d }; }); })
+          .then(function (result) {
+            submitBtn.disabled = false;
+            if (!result.ok) {
+              errorDiv.textContent = result.data.error || "Failed to post.";
+              return;
+            }
+            fetchFeed();
+          })
+          .catch(function () {
+            submitBtn.disabled = false;
+            errorDiv.textContent = "Network error posting.";
+          });
+      });
+
+      textarea.focus();
+    }
+
+    function fetchFeed() {
+      preview.innerHTML = '<div class="weather-placeholder">LOADING FEED</div>';
+      fetch(AUTH_API_BASE + "/feed", {
+        method: "GET",
+        credentials: "include"
+      })
+        .then(function (res) { return res.json().then(function (d) { return { ok: res.ok, data: d }; }); })
+        .then(function (result) {
+          if (!result.ok) {
+            preview.innerHTML = '<div class="weather-placeholder">' + (result.data.error || "FAILED TO LOAD FEED").toUpperCase() + '</div>';
+            return;
+          }
+          var posts = result.data.posts || [];
+          var html = '';
+          html += '<div class="leaderboard-view">';
+          html += '<div class="weather-city">FEED</div>';
+          html += '<div class="feed-list">';
+          if (posts.length === 0) {
+            html += '<div class="weather-placeholder">NO POSTS YET &mdash; FOLLOW SOMEONE OR POST SOMETHING</div>';
+          } else {
+            posts.forEach(function (p) {
+              html += renderPost(p);
+            });
+          }
+          html += '</div>';
+          html += '<button class="change-btn" style="display:inline-block; margin-top:24px;" onclick="fetchFeed()"><span>Refresh</span></button>';
+          html += '<button class="change-btn" style="display:inline-block; margin-top:8px;" onclick="exitMobileWeatherView()"><span>Back</span></button>';
+          html += '</div>';
+          preview.innerHTML = html;
+        })
+        .catch(function () {
+          preview.innerHTML = '<div class="weather-placeholder">FAILED TO LOAD FEED</div>';
+        });
+    }
+
+    function renderError(city) {
+      window.currentActiveCity = city;
+      var html = '';
+      html += '<div class="weather-error">';
+      html += '<div class="weather-error-title">' + city + ' down.</div>';
+      html += '<div class="weather-error-last">Last known temp 17&deg;</div>';
+      html += '<div class="notify-buttons">';
+      html += '<button class="notify-button" data-target="BOM"><span>Notify BOM</span></button>';
+      html += '<button class="notify-button" data-target="JT"><span>Notify JT</span></button>';
+      html += '</div>';
+      if (isMobile()) {
+        html += '<button class="change-btn" style="display:inline-block;" onclick="exitMobileWeatherView()"><span>Change</span></button>';
+      }
+      html += '</div>';
+      preview.innerHTML = html;
+
+      var notifyButtons = preview.querySelectorAll(".notify-button");
+      notifyButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          button.classList.add("sent");
+          button.querySelector("span").textContent = "Notified";
+          button.disabled = true;
+        });
+      });
+    }
+
+    function renderLoading(city) {
+      preview.innerHTML = '<div class="weather-placeholder">LOADING ' + city.toUpperCase() + '</div>';
+    }
+
+    function fetchWeather(city) {
+      renderLoading(city);
+      var searchUrl = "https://api.weather.bom.gov.au/v1/locations?search=" + encodeURIComponent(city);
+      fetch(searchUrl)
+        .then(function (response) { return response.json(); })
+        .then(function (searchJson) {
+          var geohash = searchJson.data[0].geohash.slice(0, 6);
+          var hourlyUrl = "https://api.weather.bom.gov.au/v1/locations/" + geohash + "/forecasts/hourly";
+          var dailyUrl = "https://api.weather.bom.gov.au/v1/locations/" + geohash + "/forecasts/daily";
+          var climateUrl = "https://api.weather.bom.gov.au/v1/locations/" + geohash + "/climate-averages";
+
+          return Promise.all([
+            fetch(hourlyUrl).then(function (res) { return res.json(); }),
+            fetch(dailyUrl).then(function (res) { return res.json(); }),
+            fetch(climateUrl).then(function (res) { return res.json(); }).catch(function () { return null; })
+          ]);
+        })
+        .then(function (responses) {
+          var hourlyJson = responses[0];
+          var dailyJson = responses[1];
+          var climateJson = responses[2];
+
+          var hours = hourlyJson.data.slice(0, 24);
+          var todayDaily = dailyJson.data[0];
+          var dailyMin = (todayDaily && todayDaily.temp_min !== null && todayDaily.temp_min !== undefined) ? todayDaily.temp_min : null;
+          var dailyMax = (todayDaily && todayDaily.temp_max !== null && todayDaily.temp_max !== undefined) ? todayDaily.temp_max : null;
+
+          if ((dailyMin === null || dailyMax === null) && hours.length > 0) {
+            var hourTemps = hours.map(function (h) { return h.temp; });
+            if (dailyMin === null) dailyMin = Math.min.apply(null, hourTemps);
+            if (dailyMax === null) dailyMax = Math.max.apply(null, hourTemps);
+          }
+
+          var currentMonth = new Date().getMonth() + 1;
+          var climate = null;
+          if (climateJson && climateJson.data) {
+            climate = climateJson.data.find(function (c) { return c.month === currentMonth; });
+          }
+
+          if (guessingMode) {
+            renderGuessPrompt(city, hours[0].temp);
+          } else {
+            renderWeather(city, hours[0], hours, dailyMin, dailyMax, climate);
+          }
+        })
+        .catch(function () {
+          renderError(city);
+        });
+    }
+
+    var cityColors = {
+      Melbourne: "#a7c7f7",
+      Adelaide: "#ffb36b",
+      Sydney: "#fff09a",
+      Brisbane: "#b5e8c5",
+      Perth: "#c7b8ff",
+      "Gold Coast": "#ffb7d5",
+      Newcastle: "#a8e6e6",
+      Canberra: "#d6c2ff",
+      "Sunshine Coast": "#ffd1a9",
+      "Central Coast": "#b9d7ff",
+      Wollongong: "#f3b8c8",
+      Geelong: "#bde7c5",
+      Hobart: "#c9c4ff",
+      Townsville: "#ffd6a5",
+      Cairns: "#a9e5d1",
+      Toowoomba: "#e4c1f9",
+      Darwin: "#ffb5a7",
+      Ballarat: "#c5d8ff",
+      Bendigo: "#f6d6a8",
+      "Albury-Wodonga": "#d2f0b5",
+      Launceston: "#c4d9e8",
+      Mackay: "#f5c2d7",
+      Bunbury: "#b8e0d2",
+      Rockhampton: "#e8c6ff"
+    };
+
+    var regionalCities = [
+      "Alice Springs", "Broome", "Broken Hill", "Mount Isa",
+      "Kalgoorlie", "Mildura", "Shepparton", "Warrnambool", "Horsham",
+      "Wangaratta", "Echuca", "Swan Hill", "Hamilton", "Portland",
+      "Colac", "Ararat", "Stawell", "Bairnsdale", "Sale",
+      "Traralgon", "Warragul", "Morwell", "Orange",
+      "Bathurst", "Dubbo", "Tamworth", "Armidale", "Lismore",
+      "Grafton", "Coffs Harbour", "Port Macquarie", "Taree", "Goulburn",
+      "Queanbeyan", "Cooma", "Griffith", "Wagga Wagga", "Albury", "Busselton", "Geraldton"
+    ];
+
+    var ruralCities = [
+      "Ceduna", "Coober Pedy", "Broome", "Burnie", "Exmouth",
+      "Kununurra", "Halls Creek", "Tennant Creek", "Jabiru", "Nhulunbuy",
+      "Normanton", "Cooktown", "Longreach", "Charleville", "Roma",
+      "Emerald", "Cloncurry", "Innisfail", "Charters Towers", "Kingaroy",
+      "Stanthorpe", "Lightning Ridge", "Bourke", "Cobar", "Hay",
+      "Deniliquin", "Moree", "Narrabri", "Inverell", "Glen Innes",
+      "Cooma", "Merimbula", "Bega", "Narooma", "Ulladulla",
+      "St Helens", "Queenstown", "Smithton", "Strahan", "Ouyen"
+    ];
+
+    var sweepPalette = Object.keys(cityColors).map(function (city) {
+      return cityColors[city];
+    });
+
+    function getFavorites() {
+      var match = document.cookie.match(new RegExp('(^| )favorites=([^;]+)'));
+      if (match) {
+        try {
+          return JSON.parse(decodeURIComponent(match[2]));
+        } catch (e) {
+          return [];
+        }
+      }
+      return [];
+    }
+
+    function saveFavorites(favorites) {
+      var expires = new Date();
+      expires.setFullYear(expires.getFullYear() + 1);
+      document.cookie = "favorites=" + encodeURIComponent(JSON.stringify(favorites)) + ";expires=" + expires.toUTCString() + ";path=/";
+    }
+
+    var allCities = [
+      "Melbourne", "Adelaide", "Sydney", "Brisbane", "Perth", "Gold Coast",
+      "Newcastle", "Canberra", "Sunshine Coast", "Central Coast", "Wollongong",
+      "Geelong", "Hobart", "Townsville", "Cairns", "Toowoomba", "Darwin",
+      "Ballarat", "Bendigo", "Albury-Wodonga", "Launceston", "Mackay", "Bunbury", "Rockhampton"
+    ];
+
+    function getSortedCities() {
+      var favorites = getFavorites();
+      var favList = [];
+      var otherList = [];
+
+      allCities.forEach(function (city) {
+        if (favorites.indexOf(city) !== -1) {
+          favList.push(city);
+        } else {
+          otherList.push(city);
+        }
+      });
+
+      return favList.concat(otherList);
+    }
+
+    function enterMobileWeatherView() {
+      document.body.classList.add("mobile-weather-view");
+    }
+
+    function exitMobileWeatherView() {
+      document.body.classList.remove("mobile-weather-view");
+    }
+
+    function selectCity(city, color) {
+      document.querySelectorAll(".link[data-city]").forEach(function (l) {
+        l.classList.remove("active");
+      });
+      var match = document.querySelector('.link[data-city="' + city + '"]');
+      if (match) {
+        match.classList.add("active");
+      }
+      preview.style.setProperty("--city-color", color);
+      fetchWeather(city);
+      if (isMobile()) {
+        enterMobileWeatherView();
+      }
+    }
+
+    var pageSize = 4;
+    var linksContainer = document.getElementById("links");
+    var extras = document.getElementById("extras");
+
+    function cityClass(city) {
+      return city.toLowerCase().replace(/[^a-z]/g, "");
+    }
+
+    var mode = "main";
+    var metroPage = 0;
+    var regionalPage = 0;
+    var ruralPage = 0;
+
+    function renderMainList() {
+      linksContainer.innerHTML = "";
+      var sortedCities = getSortedCities();
+      var mainCities = sortedCities.slice(0, 4);
+
+      mainCities.forEach(function (city) {
+        var color = cityColors[city] || "#ffffff";
+        var favorites = getFavorites();
+        var isFav = favorites.indexOf(city) !== -1;
+
+        var container = document.createElement("div");
+        container.className = "link-container";
+
+        var btn = document.createElement("button");
+        btn.className = "link " + cityClass(city);
+        btn.setAttribute("data-city", city);
+        btn.style.setProperty("--sweep", color);
+
+        var span = document.createElement("span");
+        span.textContent = city.toUpperCase();
+        btn.appendChild(span);
+
+        btn.addEventListener("click", function () {
+          selectCity(city, color);
+        });
+
+        var favBtn = document.createElement("button");
+        favBtn.className = "fav-btn" + (isFav ? " favorited" : "");
+        favBtn.innerHTML = heartSvgString;
+        favBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          toggleFavorite(city);
+        });
+
+        container.appendChild(btn);
+        container.appendChild(favBtn);
+        linksContainer.appendChild(container);
+      });
+    }
+
+    function toggleFavorite(city) {
+      var favorites = getFavorites();
+      var index = favorites.indexOf(city);
+      if (index !== -1) {
+        favorites.splice(index, 1);
+      } else {
+        favorites.push(city);
+      }
+      saveFavorites(favorites);
+      renderMainList();
+      if (mode === "metro") {
+        renderMetroList(metroPage);
+      } else if (mode === "regional") {
+        renderRegionalList(regionalPage);
+      } else if (mode === "rural") {
+        renderRuralList(ruralPage);
+      } else {
+        renderDefaultButtons();
+      }
+    }
+
+    function renderDefaultButtons() {
+      extras.innerHTML = "";
+
+      var containerMetro = document.createElement("div");
+      containerMetro.className = "link-container";
+      var metroBtn = document.createElement("button");
+      metroBtn.className = "link metro-button";
+      metroBtn.innerHTML = "<span>METRO</span>";
+      metroBtn.addEventListener("click", function () {
+        mode = "metro";
+        metroPage = 0;
+        renderMetroList(metroPage);
+      });
+      containerMetro.appendChild(metroBtn);
+      extras.appendChild(containerMetro);
+
+      var containerRegional = document.createElement("div");
+      containerRegional.className = "link-container";
+      var regionalBtn = document.createElement("button");
+      regionalBtn.className = "link regional-button";
+      regionalBtn.innerHTML = "<span>REGIONAL</span>";
+      regionalBtn.addEventListener("click", function () {
+        mode = "regional";
+        regionalPage = 0;
+        renderRegionalList(regionalPage);
+      });
+      containerRegional.appendChild(regionalBtn);
+      extras.appendChild(containerRegional);
+
+      var containerRural = document.createElement("div");
+      containerRural.className = "link-container";
+      var ruralBtn = document.createElement("button");
+      ruralBtn.className = "link rural-button";
+      ruralBtn.innerHTML = "<span>RURAL</span>";
+      ruralBtn.addEventListener("click", function () {
+        mode = "rural";
+        ruralPage = 0;
+        renderRuralList(ruralPage);
+      });
+      containerRural.appendChild(ruralBtn);
+      extras.appendChild(containerRural);
+    }
+
+    function renderMetroList(page) {
+      extras.innerHTML = "";
+
+      var sortedCities = getSortedCities();
+      var remainingCities = sortedCities.slice(4);
+      var pageCount = Math.ceil(remainingCities.length / pageSize);
+
+      var start = page * pageSize;
+      var pageCities = remainingCities.slice(start, start + pageSize);
+
+      pageCities.forEach(function (city, i) {
+        var color = cityColors[city] || sweepPalette[(start + i) % sweepPalette.length];
+        var favorites = getFavorites();
+        var isFav = favorites.indexOf(city) !== -1;
+
+        var container = document.createElement("div");
+        container.className = "link-container";
+
+        var btn = document.createElement("button");
+        btn.className = "link " + cityClass(city);
+        btn.setAttribute("data-city", city);
+        btn.style.setProperty("--sweep", color);
+
+        var span = document.createElement("span");
+        span.textContent = city.toUpperCase();
+        btn.appendChild(span);
+
+        btn.addEventListener("click", function () {
+          selectCity(city, color);
+        });
+
+        var favBtn = document.createElement("button");
+        favBtn.className = "fav-btn" + (isFav ? " favorited" : "");
+        favBtn.innerHTML = heartSvgString;
+        favBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          toggleFavorite(city);
+        });
+
+        container.appendChild(btn);
+        container.appendChild(favBtn);
+        extras.appendChild(container);
+      });
+
+      var navRow = document.createElement("div");
+      navRow.className = "nav-row";
+
+      var backBtn = document.createElement("button");
+      backBtn.className = "link nav";
+      backBtn.innerHTML = "<span>BACK</span>";
+      backBtn.addEventListener("click", function () {
+        if (metroPage === 0) {
+          mode = "main";
+          renderDefaultButtons();
+          return;
+        }
+        metroPage -= 1;
+        renderMetroList(metroPage);
+      });
+
+      var forwardBtn = document.createElement("button");
+      forwardBtn.className = "link nav";
+      forwardBtn.innerHTML = "<span>FORWARD</span>";
+      forwardBtn.addEventListener("click", function () {
+        metroPage = metroPage === pageCount - 1 ? 0 : metroPage + 1;
+        renderMetroList(metroPage);
+      });
+
+      navRow.appendChild(backBtn);
+      navRow.appendChild(forwardBtn);
+      extras.appendChild(navRow);
+    }
+
+    function renderRegionalList(page) {
+      extras.innerHTML = "";
+
+      var pageCount = Math.ceil(regionalCities.length / pageSize);
+      var start = page * pageSize;
+      var pageCities = regionalCities.slice(start, start + pageSize);
+
+      pageCities.forEach(function (city, i) {
+        var color = "#d6c2ff";
+        var favorites = getFavorites();
+        var isFav = favorites.indexOf(city) !== -1;
+
+        var container = document.createElement("div");
+        container.className = "link-container";
+
+        var btn = document.createElement("button");
+        btn.className = "link " + cityClass(city);
+        btn.setAttribute("data-city", city);
+        btn.style.setProperty("--sweep", color);
+
+        var span = document.createElement("span");
+        span.textContent = city.toUpperCase();
+        btn.appendChild(span);
+
+        btn.addEventListener("click", function () {
+          selectCity(city, color);
+        });
+
+        var favBtn = document.createElement("button");
+        favBtn.className = "fav-btn" + (isFav ? " favorited" : "");
+        favBtn.innerHTML = heartSvgString;
+        favBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          toggleFavorite(city);
+        });
+
+        container.appendChild(btn);
+        container.appendChild(favBtn);
+        extras.appendChild(container);
+      });
+
+      var navRow = document.createElement("div");
+      navRow.className = "nav-row";
+
+      var backBtn = document.createElement("button");
+      backBtn.className = "link nav";
+      backBtn.innerHTML = "<span>BACK</span>";
+      backBtn.addEventListener("click", function () {
+        if (regionalPage === 0) {
+          mode = "main";
+          renderDefaultButtons();
+          return;
+        }
+        regionalPage -= 1;
+        renderRegionalList(regionalPage);
+      });
+
+      var forwardBtn = document.createElement("button");
+      forwardBtn.className = "link nav";
+      forwardBtn.innerHTML = "<span>FORWARD</span>";
+      forwardBtn.addEventListener("click", function () {
+        regionalPage = regionalPage === pageCount - 1 ? 0 : regionalPage + 1;
+        renderRegionalList(regionalPage);
+      });
+
+      navRow.appendChild(backBtn);
+      navRow.appendChild(forwardBtn);
+      extras.appendChild(navRow);
+    }
+
+    function renderRuralList(page) {
+      extras.innerHTML = "";
+
+      var pageCount = Math.ceil(ruralCities.length / pageSize);
+      var start = page * pageSize;
+      var pageCities = ruralCities.slice(start, start + pageSize);
+
+      pageCities.forEach(function (city, i) {
+        var color = "#e6c280";
+        var favorites = getFavorites();
+        var isFav = favorites.indexOf(city) !== -1;
+
+        var container = document.createElement("div");
+        container.className = "link-container";
+
+        var btn = document.createElement("button");
+        btn.className = "link " + cityClass(city);
+        btn.setAttribute("data-city", city);
+        btn.style.setProperty("--sweep", color);
+
+        var span = document.createElement("span");
+        span.textContent = city.toUpperCase();
+        btn.appendChild(span);
+
+        btn.addEventListener("click", function () {
+          selectCity(city, color);
+        });
+
+        var favBtn = document.createElement("button");
+        favBtn.className = "fav-btn" + (isFav ? " favorited" : "");
+        favBtn.innerHTML = heartSvgString;
+        favBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          toggleFavorite(city);
+        });
+
+        container.appendChild(btn);
+        container.appendChild(favBtn);
+        extras.appendChild(container);
+      });
+
+      var navRow = document.createElement("div");
+      navRow.className = "nav-row";
+
+      var backBtn = document.createElement("button");
+      backBtn.className = "link nav";
+      backBtn.innerHTML = "<span>BACK</span>";
+      backBtn.addEventListener("click", function () {
+        if (ruralPage === 0) {
+          mode = "main";
+          renderDefaultButtons();
+          return;
+        }
+        ruralPage -= 1;
+        renderRuralList(ruralPage);
+      });
+
+      var forwardBtn = document.createElement("button");
+      forwardBtn.className = "link nav";
+      forwardBtn.innerHTML = "<span>FORWARD</span>";
+      forwardBtn.addEventListener("click", function () {
+        ruralPage = ruralPage === pageCount - 1 ? 0 : ruralPage + 1;
+        renderRuralList(ruralPage);
+      });
+
+      navRow.appendChild(backBtn);
+      navRow.appendChild(forwardBtn);
+      extras.appendChild(navRow);
+    }
+
+    renderMainList();
+    renderDefaultButtons();
+
+    document.getElementById("changeCityBtn").addEventListener("click", function () {
+      exitMobileWeatherView();
+    });
+
+    var AUTH_TRANSITION_MS = 450;
+    var AUTH_EXIT_MS = 550;
+
+    var authView = document.getElementById("authView");
+    var authTitle = document.getElementById("authTitle").querySelector("span");
+    var authUsername = document.getElementById("authUsername");
+    var authPassword = document.getElementById("authPassword");
+    var authError = document.getElementById("authError");
+    var authSubmitBtn = document.getElementById("authSubmitBtn");
+    var authBackBtn = document.getElementById("authBackBtn");
+    var loginBtn = document.getElementById("loginBtn");
+    var registerBtn = document.getElementById("registerBtn");
+    var guessToggleBtn = document.getElementById("guessToggleBtn");
+    var leaderboardBarBtn = document.getElementById("leaderboardBarBtn");
+    var searchBarBtn = document.getElementById("searchBarBtn");
+    var feedBarBtn = document.getElementById("feedBarBtn");
+    var postBarBtn = document.getElementById("postBarBtn");
+
+    var authMode = "login";
+    var currentUser = null;
+
+    function openAuthScreen(m) {
+      authMode = m;
+      authError.textContent = "";
+      authUsername.value = "";
+      authPassword.value = "";
+      if (m === "login") {
+        authTitle.textContent = "Log-In";
+        authSubmitBtn.querySelector("span").textContent = "Log In";
+      } else {
+        authTitle.textContent = "Register";
+        authSubmitBtn.querySelector("span").textContent = "Register";
+      }
+
+      document.body.classList.add("auth-hiding");
+
+      setTimeout(function () {
+        document.body.classList.add("auth-open");
+        void authView.offsetWidth;
+        authView.classList.add("visible");
+        authUsername.focus();
+      }, AUTH_TRANSITION_MS);
+    }
+
+    function closeAuthScreen() {
+      authView.classList.remove("visible");
+
+      setTimeout(function () {
+        document.body.classList.remove("auth-open");
+        void document.body.offsetWidth;
+        document.body.classList.remove("auth-hiding");
+      }, AUTH_EXIT_MS);
+    }
+
+    loginBtn.addEventListener("click", function () {
+      if (currentUser) {
+        logoutUser();
+        return;
+      }
+      openAuthScreen("login");
+    });
+
+    registerBtn.addEventListener("click", function () {
+      openAuthScreen("register");
+    });
+
+    guessToggleBtn.addEventListener("click", function () {
+      guessingMode = !guessingMode;
+      guessToggleBtn.classList.remove("guessing-pulse");
+      void guessToggleBtn.offsetWidth;
+      guessToggleBtn.classList.add("guessing-pulse");
+      if (guessingMode) {
+        guessToggleBtn.classList.add("guessing-active");
+      } else {
+        guessToggleBtn.classList.remove("guessing-active");
+      }
+    });
+
+    leaderboardBarBtn.addEventListener("click", function () {
+      fetchLeaderboard();
+      if (isMobile()) {
+        enterMobileWeatherView();
+      }
+    });
+
+    searchBarBtn.addEventListener("click", function () {
+      renderSearchView();
+      if (isMobile()) {
+        enterMobileWeatherView();
+      }
+    });
+
+    feedBarBtn.addEventListener("click", function () {
+      fetchFeed();
+      if (isMobile()) {
+        enterMobileWeatherView();
+      }
+    });
+
+    postBarBtn.addEventListener("click", function () {
+      renderPostComposer();
+      if (isMobile()) {
+        enterMobileWeatherView();
+      }
+    });
+
+    authBackBtn.addEventListener("click", closeAuthScreen);
+
+    authSubmitBtn.addEventListener("click", function () {
+      var username = authUsername.value.trim();
+      var password = authPassword.value;
+
+      if (!username || !password) {
+        authError.textContent = "Enter a username and password.";
+        return;
+      }
+
+      authError.textContent = "";
+      authSubmitBtn.disabled = true;
+
+      var endpoint = authMode === "login" ? "/login" : "/register";
+
+      fetch(AUTH_API_BASE + endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ username: username, password: password })
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { ok: res.ok, data: data };
+          });
+        })
+        .then(function (result) {
+          authSubmitBtn.disabled = false;
+          if (!result.ok) {
+            authError.textContent = result.data.error || "Something went wrong.";
+            return;
+          }
+          currentUser = result.data.username || username;
+          updateAuthBar();
+          closeAuthScreen();
+        })
+        .catch(function () {
+          authSubmitBtn.disabled = false;
+          authError.textContent = "Could not reach the server.";
+        });
+    });
+
+    function logoutUser() {
+      fetch(AUTH_API_BASE + "/logout", {
+        method: "POST",
+        credentials: "include"
+      }).finally(function () {
+        currentUser = null;
+        guessingMode = false;
+        guessToggleBtn.classList.remove("guessing-active");
+        updateAuthBar();
+      });
+    }
+
+    function updateAuthBar() {
+      var loginSpan = loginBtn.querySelector("span");
+      if (currentUser) {
+        loginBtn.classList.add("logged-in");
+        loginSpan.textContent = "OUT";
+        registerBtn.style.display = "none";
+        guessToggleBtn.style.display = "inline-block";
+        feedBarBtn.style.display = "inline-block";
+        postBarBtn.style.display = "inline-block";
+      } else {
+        loginBtn.classList.remove("logged-in");
+        loginSpan.textContent = "L-I";
+        registerBtn.style.display = "inline-block";
+        guessToggleBtn.style.display = "none";
+        feedBarBtn.style.display = "none";
+        postBarBtn.style.display = "none";
+      }
+    }
+
+    function checkSession() {
+      fetch(AUTH_API_BASE + "/me", {
+        method: "GET",
+        credentials: "include"
+      })
+        .then(function (res) {
+          if (!res.ok) return null;
+          return res.json();
+        })
+        .then(function (data) {
+          if (data && data.username) {
+            currentUser = data.username;
+            updateAuthBar();
+          }
+        })
+        .catch(function () { });
+    }
+
+    checkSession();
+
+  </script>
+
+</body>
+
+</html>
