@@ -510,6 +510,55 @@
       line-height: 1.5;
     }
 
+    .radar-image {
+      width: 100%;
+      max-width: 420px;
+      display: block;
+      margin-top: 24px;
+      border: 1px solid #333333;
+    }
+
+    .radar-note {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #888888;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      line-height: 1.5;
+    }
+
+    .radar-range-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .radar-range-btn {
+      position: relative;
+      overflow: hidden;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #ffffff;
+      background-color: transparent;
+      border: 1px solid #333333;
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .radar-range-btn:hover {
+      border-color: #ff2ec4;
+    }
+
+    .radar-range-btn.active {
+      background-color: #ff2ec4;
+      border-color: #ff2ec4;
+      color: #000000;
+    }
+
     .weather-placeholder {
       color: #444444;
       font-size: 14px;
@@ -1582,6 +1631,7 @@
       html += '</div>';
       html += '<div class="weather-chart">' + buildSparkline(hours) + '</div>';
       html += '<div class="weather-quote">' + randomQuote() + '</div>';
+      html += '<button class="change-btn" style="display:inline-block; margin-top:24px;" onclick="renderRadarView(\'' + city + '\')"><span>Rain Radar</span></button>';
       if (isMobile()) {
         html += '<button class="change-btn" style="display:inline-block;" onclick="exitMobileWeatherView()"><span>Change</span></button>';
       }
@@ -2301,6 +2351,157 @@ var MAP_SVG_INNER = `<path d="M314.74 476.45L295.44 485.62L281.07 490.02L269.09 
         .catch(function () {
           renderError(city);
         });
+    }
+
+    // BOM 128km radar loop station codes (confirmed against bom.gov.au product pages)
+    var radarStations = {
+      Melbourne: "023",
+      Adelaide: "643",
+      Sydney: "713",
+      Brisbane: "663",
+      Perth: "703",
+      Hobart: "763",
+      Darwin: "633",
+      Cairns: "193",
+      Canberra: "403"
+    };
+
+    // Cities without their own station are mapped to the nearest radar above.
+    var radarFallback = {
+      "Gold Coast": "Brisbane",
+      Newcastle: "Sydney",
+      "Sunshine Coast": "Brisbane",
+      "Central Coast": "Sydney",
+      Wollongong: "Sydney",
+      Geelong: "Melbourne",
+      Townsville: "Cairns",
+      Toowoomba: "Brisbane",
+      Ballarat: "Melbourne",
+      Bendigo: "Melbourne",
+      "Albury-Wodonga": "Melbourne",
+      Launceston: "Hobart",
+      Mackay: "Brisbane",
+      Bunbury: "Perth",
+      Rockhampton: "Brisbane",
+      "Alice Springs": "Darwin",
+      Broome: "Perth",
+      "Broken Hill": "Adelaide",
+      "Mount Isa": "Cairns",
+      Kalgoorlie: "Perth",
+      Mildura: "Melbourne",
+      Shepparton: "Melbourne",
+      Warrnambool: "Melbourne",
+      Horsham: "Melbourne",
+      Wangaratta: "Melbourne",
+      Echuca: "Melbourne",
+      "Swan Hill": "Melbourne",
+      Hamilton: "Melbourne",
+      Portland: "Melbourne",
+      Colac: "Melbourne",
+      Ararat: "Melbourne",
+      Stawell: "Melbourne",
+      Bairnsdale: "Melbourne",
+      Sale: "Melbourne",
+      Traralgon: "Melbourne",
+      Warragul: "Melbourne",
+      Morwell: "Melbourne",
+      Orange: "Sydney",
+      Bathurst: "Sydney",
+      Dubbo: "Sydney",
+      Tamworth: "Sydney",
+      Armidale: "Sydney",
+      Lismore: "Brisbane",
+      Grafton: "Brisbane",
+      "Coffs Harbour": "Brisbane",
+      "Port Macquarie": "Sydney",
+      Taree: "Sydney",
+      Goulburn: "Sydney",
+      Queanbeyan: "Canberra",
+      Cooma: "Canberra",
+      Griffith: "Sydney",
+      "Wagga Wagga": "Canberra",
+      Albury: "Melbourne",
+      Busselton: "Perth",
+      Geraldton: "Perth",
+      Ceduna: "Adelaide",
+      "Coober Pedy": "Adelaide",
+      Burnie: "Hobart",
+      Exmouth: "Perth",
+      Kununurra: "Darwin",
+      "Halls Creek": "Darwin",
+      "Tennant Creek": "Darwin",
+      Jabiru: "Darwin",
+      Nhulunbuy: "Darwin",
+      Normanton: "Cairns",
+      Cooktown: "Cairns",
+      Longreach: "Brisbane",
+      Charleville: "Brisbane",
+      Roma: "Brisbane",
+      Emerald: "Brisbane",
+      Cloncurry: "Cairns",
+      Innisfail: "Cairns",
+      "Charters Towers": "Cairns",
+      Kingaroy: "Brisbane",
+      Stanthorpe: "Brisbane",
+      "Lightning Ridge": "Sydney",
+      Bourke: "Sydney",
+      Cobar: "Sydney",
+      Hay: "Sydney",
+      Deniliquin: "Melbourne",
+      Moree: "Sydney",
+      Narrabri: "Sydney",
+      Inverell: "Sydney",
+      "Glen Innes": "Sydney",
+      Merimbula: "Canberra",
+      Bega: "Canberra",
+      Narooma: "Canberra",
+      Ulladulla: "Sydney",
+      "St Helens": "Hobart",
+      Queenstown: "Hobart",
+      Smithton: "Hobart",
+      Strahan: "Hobart",
+      Ouyen: "Melbourne"
+    };
+
+    function getRadarInfo(city) {
+      if (radarStations[city]) {
+        return { code: radarStations[city], stationCity: city, exact: true };
+      }
+      var fallbackCity = radarFallback[city];
+      if (fallbackCity && radarStations[fallbackCity]) {
+        return { code: radarStations[fallbackCity], stationCity: fallbackCity, exact: false };
+      }
+      return null;
+    }
+
+    var radarRangeLabels = { "4": "64KM", "3": "128KM", "2": "256KM" };
+
+    function renderRadarView(city, range) {
+      window.currentActiveCity = city;
+      range = range || "3";
+      var info = getRadarInfo(city);
+      var html = '';
+      html += '<div class="weather">';
+      html += '<div class="weather-city">' + city.toUpperCase() + ' RADAR</div>';
+      if (info) {
+        var stationId = info.code.slice(0, 2);
+        var imgUrl = "https://www.bom.gov.au/radar/IDR" + stationId + range + ".gif";
+        html += '<img class="radar-image" src="' + imgUrl + '" alt="' + city + ' rain radar loop" id="radarImg" onerror="this.style.display=\'none\'; document.getElementById(\'radarErrorNote\').style.display=\'block\';">';
+        html += '<div class="radar-note" id="radarErrorNote" style="display:none;">Radar image unavailable right now &mdash; try again shortly.</div>';
+        html += '<div class="radar-range-row">';
+        ["4", "3", "2"].forEach(function (r) {
+          html += '<button class="radar-range-btn' + (r === range ? ' active' : '') + '" onclick="renderRadarView(\'' + city + '\', \'' + r + '\')"><span>' + radarRangeLabels[r] + '</span></button>';
+        });
+        html += '</div>';
+        if (!info.exact) {
+          html += '<div class="radar-note">' + city + ' has no radar of its own &mdash; showing the nearest station (' + info.stationCity + ').</div>';
+        }
+      } else {
+        html += '<div class="weather-placeholder">NO RADAR COVERAGE FOUND FOR THIS LOCATION</div>';
+      }
+      html += '<button class="change-btn" style="display:inline-block; margin-top:24px;" onclick="fetchWeather(\'' + city + '\')"><span>Back to Weather</span></button>';
+      html += '</div>';
+      preview.innerHTML = html;
     }
 
     var cityColors = {
