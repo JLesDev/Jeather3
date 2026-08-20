@@ -302,6 +302,63 @@
       letter-spacing: 1px;
     }
 
+    .radar-header-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .radar-live-badge {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      overflow: hidden;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .radar-live-badge::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: var(--city-color, #ff2ec4);
+      opacity: 0.35;
+      z-index: 1;
+    }
+
+    .radar-live-badge span,
+    .radar-live-dot {
+      position: relative;
+      z-index: 2;
+    }
+
+    .radar-live-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--city-color, #ff2ec4);
+      margin-right: 6px;
+      animation: radarDotPulse 1.6s ease-in-out infinite;
+    }
+
+    @keyframes radarDotPulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.7);
+      }
+    }
+
     /* Sentiment Tracker Styles & Animations */
     .sentiment-wrapper {
       margin-top: 0px;
@@ -525,6 +582,18 @@
       margin-top: 0;
       border: none;
       display: block;
+      filter: invert(1) hue-rotate(180deg) saturate(1.25) contrast(1.05) brightness(0.92);
+    }
+
+    .radar-image-wrapper::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--city-color, #ff2ec4) 0%, transparent 60%);
+      opacity: 0.16;
+      mix-blend-mode: overlay;
+      pointer-events: none;
+      z-index: 1;
     }
 
     .radar-image {
@@ -577,6 +646,8 @@
       letter-spacing: 1px;
       text-transform: uppercase;
       line-height: 1.5;
+      padding-left: 10px;
+      border-left: 2px solid var(--city-color, #ff2ec4);
     }
 
     .radar-range-row {
@@ -856,6 +927,89 @@
       z-index: 50;
     }
 
+    .post-image-picker {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .post-image-input {
+      display: none;
+    }
+
+    .post-image-btn {
+      position: relative;
+      overflow: hidden;
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #ffffff;
+      background-color: transparent;
+      border: 1px solid #333333;
+      padding: 8px 14px;
+      cursor: pointer;
+      z-index: 0;
+      transition: border-color 0.2s ease;
+    }
+
+    .post-image-btn:hover {
+      border-color: #ff2ec4;
+    }
+
+    .post-image-preview-wrap {
+      position: relative;
+      display: none;
+    }
+
+    .post-image-preview-wrap.visible {
+      display: inline-block;
+    }
+
+    .post-image-preview {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border: 1px solid #333333;
+      display: block;
+    }
+
+    .post-image-remove {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 20px;
+      height: 20px;
+      background-color: #ff5c5c;
+      color: #000000;
+      border: none;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 20px;
+      text-align: center;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .post-image-uploading {
+      font-size: 12px;
+      color: #888888;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .feed-item-image {
+      margin-top: 10px;
+      width: 100%;
+      max-height: 320px;
+      object-fit: cover;
+      border: 1px solid #333333;
+      display: block;
+    }
+
     .auth-btn {
       position: relative;
       overflow: hidden;
@@ -954,6 +1108,27 @@
       transform: scale(0.94) translateY(-18px);
       filter: blur(8px);
       pointer-events: none;
+    }
+
+    .post-vote-counts {
+      margin-top: 6px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #888888;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s;
+    }
+
+    .post-vote-counts.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .post-vote-counts .legend-item span {
+      color: #ffffff;
+      font-weight: 700;
     }
 
     body.auth-open .content,
@@ -1275,6 +1450,25 @@
       width: 100%;
       margin-top: 24px;
       max-width: 420px;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    .feed-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .feed-list::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+
+    .feed-list::-webkit-scrollbar-thumb {
+      background: #333333;
+    }
+
+    .feed-list::-webkit-scrollbar-thumb:hover {
+      background: #ff2ec4;
     }
 
     .feed-item {
@@ -1717,6 +1911,38 @@
       preview.innerHTML = html;
     }
 
+    window.handlePostVote = function (postId, type) {
+      fetch(AUTH_API_BASE + "/post-vote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ postId: postId, type: type })
+      })
+        .then(function (res) { return res.json().then(function (d) { return { ok: res.ok, data: d }; }); })
+        .then(function (result) {
+          if (!result.ok) return;
+          var interactiveEl = document.getElementById('post-vote-interactive-' + postId);
+          var countsEl = document.getElementById('post-vote-counts-' + postId);
+          if (interactiveEl) {
+            interactiveEl.classList.add('fade-out');
+            // Collapse the space once the fade-out finishes so the counts
+            // don't sit below an invisible gap.
+            setTimeout(function () {
+              interactiveEl.style.display = 'none';
+            }, 300);
+          }
+          if (countsEl) {
+            countsEl.classList.add('visible');
+            var spans = countsEl.querySelectorAll('.legend-item span');
+            if (spans.length >= 2) {
+              spans[0].textContent = result.data.greatCount;
+              spans[1].textContent = result.data.badCount;
+            }
+          }
+        })
+        .catch(function () { });
+    };
+
     window.handleVote = function (city, type) {
       if (hasUserVoted(city)) return;
 
@@ -1880,8 +2106,10 @@
         });
     };
 
-    function fetchLeaderboard() {
-      fetch(AUTH_API_BASE + "/leaderboard", {
+    function fetchLeaderboard(type) {
+      type = type || "points";
+      var endpoint = type === "followers" ? "/leaderboard/followers" : "/leaderboard";
+      fetch(AUTH_API_BASE + endpoint, {
         method: "GET",
         credentials: "include"
       })
@@ -1891,15 +2119,20 @@
           var html = '';
           html += '<div class="leaderboard-view">';
           html += '<div class="weather-city">LEADERBOARD</div>';
+          html += '<div class="radar-range-row">';
+          html += '<button class="radar-range-btn' + (type === "points" ? ' active' : '') + '" onclick="fetchLeaderboard(\'points\')"><span>Points</span></button>';
+          html += '<button class="radar-range-btn' + (type === "followers" ? ' active' : '') + '" onclick="fetchLeaderboard(\'followers\')"><span>Followers</span></button>';
+          html += '</div>';
           html += '<div class="leaderboard-list">';
-          html += '<div class="leaderboard-header-row"><span>User</span><span>Avg</span></div>';
+          html += '<div class="leaderboard-header-row"><span>User</span><span>' + (type === "followers" ? "Followers" : "Avg") + '</span></div>';
           if (entries.length === 0) {
-            html += '<div class="leaderboard-item"><span>No guesses yet!</span><span>-</span></div>';
+            html += '<div class="leaderboard-item"><span>No ' + (type === "followers" ? "followers" : "guesses") + ' yet!</span><span>-</span></div>';
           } else {
             entries.forEach(function (e) {
+              var valueLabel = type === "followers" ? String(e.followers) : (Math.round(e.average) + ' pts');
               html += '<div class="leaderboard-item">';
               html += '<span>' + e.username + '</span>';
-              html += '<span class="leaderboard-item-right"><span>' + Math.round(e.average) + ' pts</span>' + followButtonHTML(e.username, e.isFollowing, e.isSelf) + '</span>';
+              html += '<span class="leaderboard-item-right"><span>' + valueLabel + '</span>' + followButtonHTML(e.username, e.isFollowing, e.isSelf) + '</span>';
               html += '</div>';
             });
           }
@@ -2000,28 +2233,57 @@
       let weatherHtml = "";
       if (post.city && post.weather) {
         weatherHtml = `
-          <div class="post-weather-badge">
-            Loc. <strong>${escapeHtml(post.city)}</strong> | 
-            Current: ${post.weather.current}°C | 
-            High: ${post.weather.max}°C | 
-            Low: ${post.weather.min}°C
-          </div>
-        `;
+      <div class="post-weather-badge">
+        Loc. <strong>${escapeHtml(post.city)}</strong> | 
+        Current: ${post.weather.current}°C | 
+        High: ${post.weather.max}°C | 
+        Low: ${post.weather.min}°C
+      </div>
+    `;
       }
 
+      var visibilityLabel = post.visibility === "everyone" ? "Public" : "Followers";
+      var voted = !!post.userVote;
+      var greatCount = post.greatCount || 0;
+      var badCount = post.badCount || 0;
+
+      var imageHtml = "";
+      if (post.image) {
+        var imgSrc = AUTH_API_BASE + "/image/" + post.image.replace(/^img\//, "");
+        imageHtml = `<img class="feed-item-image" src="${imgSrc}" alt="Post image" loading="lazy">`;
+      }
+
+      var voteHtml = `
+    <div class="sentiment-wrapper" style="margin-top:10px;">
+      ${voted ? '' : `
+      <div class="sentiment-container" id="post-vote-interactive-${post.id}">
+        <button class="sentiment-btn great" onclick="handlePostVote('${post.id}', 'great')">Great</button>
+        <button class="sentiment-btn bad" onclick="handlePostVote('${post.id}', 'bad')">Bad</button>
+      </div>
+      `}
+      <div class="post-vote-counts ${voted ? 'visible' : ''}" id="post-vote-counts-${post.id}">
+        <span class="legend-item">Great: <span>${greatCount}</span></span>&nbsp;&nbsp;
+        <span class="legend-item">Bad: <span>${badCount}</span></span>
+      </div>
+    </div>
+  `;
+
       return `
-        <div class="feed-item">
-          <div class="feed-item-header"><span class="feed-item-user">@${escapeHtml(post.username)}</span><span class="feed-item-time">${timeAgo(post.createdAt)}</span></div>
-          ${post.city ? `<div class="feed-item-city">${escapeHtml(post.city.toUpperCase())}</div>` : ''}
-          <div class="feed-item-text">${escapeHtml(post.text)}</div>
-          ${weatherHtml}
-        </div>
-      `;
+    <div class="feed-item">
+      <div class="feed-item-header"><span class="feed-item-user">@${escapeHtml(post.username)}</span><span class="feed-item-time">${timeAgo(post.createdAt)} &middot; ${visibilityLabel}</span></div>
+      ${post.city ? `<div class="feed-item-city">${escapeHtml(post.city.toUpperCase())}</div>` : ''}
+      <div class="feed-item-text">${escapeHtml(post.text)}</div>
+      ${imageHtml}
+      ${weatherHtml}
+      ${voteHtml}
+    </div>
+  `;
     }
 
     function renderPostComposer() {
       var cityLabel = window.currentActiveCity ? window.currentActiveCity.toUpperCase() : '';
-      var postCity = window.currentActiveCity || null;
+      var postVisibility = "followers";
+      var uploadedImageKey = null;
 
       var html = '';
       html += '<div class="leaderboard-view">';
@@ -2029,9 +2291,22 @@
       if (cityLabel) {
         html += '<div class="feed-item-city" style="margin-top:12px;">Posting from ' + cityLabel + '</div>';
       }
+      html += '<div class="radar-range-row">';
+      html += '<button class="radar-range-btn active" id="visFollowersBtn"><span>Followers Only</span></button>';
+      html += '<button class="radar-range-btn" id="visEveryoneBtn"><span>Everyone</span></button>';
+      html += '</div>';
       html += '<div class="links" style="margin-top:20px;">';
       html += '<div class="link-container">';
       html += '<textarea class="post-textarea" id="postTextInput" maxlength="280" placeholder="What\'s the weather doing?"></textarea>';
+      html += '</div>';
+      html += '</div>';
+      html += '<div class="post-image-picker">';
+      html += '<input type="file" class="post-image-input" id="postImageInput" accept="image/png,image/jpeg,image/gif,image/webp">';
+      html += '<button type="button" class="post-image-btn" id="postImageBtn"><span>Add Image</span></button>';
+      html += '<span class="post-image-uploading" id="postImageUploading" style="display:none;">Uploading&hellip;</span>';
+      html += '<div class="post-image-preview-wrap" id="postImagePreviewWrap">';
+      html += '<img class="post-image-preview" id="postImagePreview" src="">';
+      html += '<button type="button" class="post-image-remove" id="postImageRemove">&times;</button>';
       html += '</div>';
       html += '</div>';
       html += '<div class="post-char-count" id="postCharCount">280 characters left</div>';
@@ -2052,9 +2327,94 @@
       var errorDiv = document.getElementById("postError");
       var submitBtn = document.getElementById("submitPostBtn");
       var cancelBtn = document.getElementById("cancelPostBtn");
+      var visFollowersBtn = document.getElementById("visFollowersBtn");
+      var visEveryoneBtn = document.getElementById("visEveryoneBtn");
+      var imageInput = document.getElementById("postImageInput");
+      var imageBtn = document.getElementById("postImageBtn");
+      var imageUploading = document.getElementById("postImageUploading");
+      var imagePreviewWrap = document.getElementById("postImagePreviewWrap");
+      var imagePreview = document.getElementById("postImagePreview");
+      var imageRemove = document.getElementById("postImageRemove");
+
+      visFollowersBtn.addEventListener("click", function () {
+        postVisibility = "followers";
+        visFollowersBtn.classList.add("active");
+        visEveryoneBtn.classList.remove("active");
+      });
+
+      visEveryoneBtn.addEventListener("click", function () {
+        postVisibility = "everyone";
+        visEveryoneBtn.classList.add("active");
+        visFollowersBtn.classList.remove("active");
+      });
 
       textarea.addEventListener("input", function () {
         charCount.textContent = (280 - textarea.value.length) + " characters left";
+      });
+
+      imageBtn.addEventListener("click", function () {
+        imageInput.click();
+      });
+
+      imageInput.addEventListener("change", function () {
+        var file = imageInput.files[0];
+        if (!file) return;
+
+        var allowedTypes = ["image/png", "image/jpeg", "image/gif", "image/webp"];
+        if (allowedTypes.indexOf(file.type) === -1) {
+          errorDiv.textContent = "Unsupported image type.";
+          imageInput.value = "";
+          return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          errorDiv.textContent = "Image is too large. Max 5MB.";
+          imageInput.value = "";
+          return;
+        }
+
+        errorDiv.textContent = "";
+        imageBtn.style.display = "none";
+        imageUploading.style.display = "inline";
+        uploadedImageKey = null;
+
+        var reader = new FileReader();
+        reader.onload = function () {
+          var base64 = reader.result.split(",")[1];
+          fetch(AUTH_API_BASE + "/upload-image", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ data: base64, contentType: file.type })
+          })
+            .then(function (res) { return res.json().then(function (d) { return { ok: res.ok, data: d }; }); })
+            .then(function (result) {
+              imageUploading.style.display = "none";
+              if (!result.ok) {
+                errorDiv.textContent = result.data.error || "Failed to upload image.";
+                imageBtn.style.display = "inline-block";
+                imageInput.value = "";
+                return;
+              }
+              uploadedImageKey = result.data.key;
+              imagePreview.src = reader.result;
+              imagePreviewWrap.classList.add("visible");
+            })
+            .catch(function () {
+              imageUploading.style.display = "none";
+              imageBtn.style.display = "inline-block";
+              errorDiv.textContent = "Network error uploading image.";
+              imageInput.value = "";
+            });
+        };
+        reader.readAsDataURL(file);
+      });
+
+      imageRemove.addEventListener("click", function () {
+        uploadedImageKey = null;
+        imageInput.value = "";
+        imagePreviewWrap.classList.remove("visible");
+        imagePreview.src = "";
+        imageBtn.style.display = "inline-block";
       });
 
       cancelBtn.addEventListener("click", function () {
@@ -2067,11 +2427,17 @@
           errorDiv.textContent = "Write something first.";
           return;
         }
+        if (imageUploading.style.display !== "none") {
+          errorDiv.textContent = "Image is still uploading.";
+          return;
+        }
         submitBtn.disabled = true;
 
         var postPayload = {
           text: text,
-          city: window.currentActiveCity || null
+          city: window.currentActiveCity || null,
+          visibility: postVisibility,
+          image: uploadedImageKey
         };
 
         fetch(AUTH_API_BASE + "/post", {
@@ -2098,9 +2464,11 @@
       textarea.focus();
     }
 
-    function fetchFeed() {
+    function fetchFeed(scope) {
+      scope = scope || "mine";
       preview.innerHTML = '<div class="weather-placeholder">LOADING FEED</div>';
-      fetch(AUTH_API_BASE + "/feed", {
+      var endpoint = scope === "public" ? "/feed/public" : "/feed";
+      fetch(AUTH_API_BASE + endpoint, {
         method: "GET",
         credentials: "include"
       })
@@ -2114,16 +2482,20 @@
           var html = '';
           html += '<div class="leaderboard-view">';
           html += '<div class="weather-city">FEED</div>';
+          html += '<div class="radar-range-row">';
+          html += '<button class="radar-range-btn' + (scope === "mine" ? ' active' : '') + '" onclick="fetchFeed(\'mine\')"><span>My Feed</span></button>';
+          html += '<button class="radar-range-btn' + (scope === "public" ? ' active' : '') + '" onclick="fetchFeed(\'public\')"><span>Public</span></button>';
+          html += '</div>';
           html += '<div class="feed-list">';
           if (posts.length === 0) {
-            html += '<div class="weather-placeholder">NO POSTS YET &mdash; FOLLOW SOMEONE OR POST SOMETHING</div>';
+            html += '<div class="weather-placeholder">' + (scope === "public" ? "NO PUBLIC POSTS YET" : "NO POSTS YET &mdash; FOLLOW SOMEONE OR POST SOMETHING") + '</div>';
           } else {
             posts.forEach(function (p) {
               html += renderPost(p);
             });
           }
           html += '</div>';
-          html += '<button class="change-btn" style="display:inline-block; margin-top:24px;" onclick="fetchFeed()"><span>Refresh</span></button>';
+          html += '<button class="change-btn" style="display:inline-block; margin-top:24px;" onclick="fetchFeed(\'' + scope + '\')"><span>Refresh</span></button>';
           html += '<button class="change-btn" style="display:inline-block; margin-top:8px;" onclick="exitMobileWeatherView()"><span>Back</span></button>';
           html += '</div>';
           preview.innerHTML = html;
@@ -2133,7 +2505,7 @@
         });
     }
 
-var MAP_SVG_INNER = `<path d="M314.74 476.45L295.44 485.62L281.07 490.02L269.09 490.99L259.39 489.05L230.31 504.74L218.68 509.85L215.42 520.34L207.04 529.15L197.61 527.3L188.01 529.59L177.34 526.42L163.86 526.24L137.69 528.8L129.23 534L123.23 542.72L116.62 541.23L105.87 552.24L91.24 555.94L68.07 554.44L58.46 550.39L53.96 543.43L38.72 532.76L38.37 523.07L47.27 521.48L52.38 513.73L53.96 498.48L52.64 475.48L42.86 456.62L38.1 438.47L38.9 426.92L29.99 404.36L22.86 395.11L19.86 377.48L11.49 363.38L24.79 345.49L13.51 329.01L7.60999 314.03L8.04999 306.19L14.66 294.64L15.72 281.51L12.63 274.64L18.54 261.33L23.12 273.49L26.91 272.26L32.11 259.3L48.24 252.08L62.78 237.98L72.74 234.01L85.6 235.51L94.94 233.22L100.94 227.75L114.69 225.73L121.74 219.29L129.14 221.67L156.46 212.51L163.51 206.69L170.12 194.88L183.43 181.66L179.99 165.01L182.28 159.98L195.94 149.32L204.31 164.48L209.25 161.48L211.1 142.71L224.49 144.3L227.84 137.16L224.23 127.99L229.43 122.09L241.68 116.1L238.86 111.42L257.1 101.29L266.88 100.41L274.46 91.07L283.63 95.47L298.52 110.81L314.74 114.33V476.45Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    var MAP_SVG_INNER = `<path d="M314.74 476.45L295.44 485.62L281.07 490.02L269.09 490.99L259.39 489.05L230.31 504.74L218.68 509.85L215.42 520.34L207.04 529.15L197.61 527.3L188.01 529.59L177.34 526.42L163.86 526.24L137.69 528.8L129.23 534L123.23 542.72L116.62 541.23L105.87 552.24L91.24 555.94L68.07 554.44L58.46 550.39L53.96 543.43L38.72 532.76L38.37 523.07L47.27 521.48L52.38 513.73L53.96 498.48L52.64 475.48L42.86 456.62L38.1 438.47L38.9 426.92L29.99 404.36L22.86 395.11L19.86 377.48L11.49 363.38L24.79 345.49L13.51 329.01L7.60999 314.03L8.04999 306.19L14.66 294.64L15.72 281.51L12.63 274.64L18.54 261.33L23.12 273.49L26.91 272.26L32.11 259.3L48.24 252.08L62.78 237.98L72.74 234.01L85.6 235.51L94.94 233.22L100.94 227.75L114.69 225.73L121.74 219.29L129.14 221.67L156.46 212.51L163.51 206.69L170.12 194.88L183.43 181.66L179.99 165.01L182.28 159.98L195.94 149.32L204.31 164.48L209.25 161.48L211.1 142.71L224.49 144.3L227.84 137.16L224.23 127.99L229.43 122.09L241.68 116.1L238.86 111.42L257.1 101.29L266.88 100.41L274.46 91.07L283.63 95.47L298.52 110.81L314.74 114.33V476.45Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M314.74 348.58V114.33H315L315.79 114.51L316.76 115.04L318.17 116.27L324.17 115.65L327.96 111.95L321.79 104.99L331.83 86.4L337.12 85.78L337.03 75.2L349.63 65.69L354.31 59.43L363.38 62.25L374.93 62.43L384.89 58.11L383.56 45.77L391.76 42.86L397.14 50.62L434.68 61.54L444.64 55.38L449.57 55.9L458.12 64.63L461.38 55.11L470.81 63.84L462.17 73.44L461.91 81.02L452.04 81.11L449.48 88.6L450.63 99.44L440.49 111.16L441.64 115.3L456.62 125.08L467.64 135.4L472.04 134.6L486.85 142.53L491.87 148.53V348.58H314.74ZM364.7 44.45L353.78 54.76L344.26 49.21L348.05 44.62L359.51 39.95L364.7 44.45Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M314.74 476.45V348.58H550.92V531L550.3 530.3V629.44L539.02 625.83L526.16 607.59L528.45 594.1L520.96 576.12L512.58 569.25L504.48 568.1L500.33 562.99L501.57 549.42L493.81 534L485.44 558.85L480.95 552.51L482.71 530.91L490.64 519.37L492.4 510.47L489.93 502.01L481.12 510.29L476.63 522.37L459.79 532.32L446.22 553.3L439.97 546.95L436.62 528.01L429.92 522.01L429.21 515.32L418.64 510.82L414.59 500.25L416.08 494.25L409.74 489.32L397.31 487.91L389.47 482.62L377.66 484.03L357.65 471.6L349.99 474.6L337.56 473.81L314.74 476.45ZM494.43 574.19L481.21 580.62L466.58 580.18L464.73 572.6L479.09 568.55L494.43 574.19Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M491.87 348.58V148.53L493.11 149.94L495.49 151.7L512.32 156.19L516.99 165.09L531.27 172.5L547.66 167.21L554.89 151.79L560.53 126.76L564.05 117.24L561.14 106.49L561.32 87.98L564.58 81.46L564.05 65.16L569.51 55.11L574.01 34.75L579.38 30.43L585.2 35.72L587.76 53.26L594.28 55.9L591.99 63.04L598.86 68.59L600.71 91.6L605.03 103.58L609 106.75L618.78 101.64L623.27 107.99L635.08 115.92L634.99 127.9L637.81 144.3L650.77 166.24L649.8 184.04L655.97 189.51L658.44 200.87L671.65 207.92L677.82 207.57L682.49 216.56L694.13 219.47L705.41 227.49L701.79 232.51L712.9 243.09L717.66 260.89L722.24 270.5L732.29 270.76L744.36 277.55L744.1 292.44L756.08 304.6L766.13 309.8L770.36 318.53L776.62 322.49L785.25 341.97L790.63 347.34L788.6 354.75L790.54 378.98L795.83 388.5L795.3 390.7L795.92 394.32L796.53 395.2L797.06 396.08L794.59 398.02L790.89 398.55L789.04 400.66L777.06 398.55L766.83 404.63L767.89 412.47L753.35 413.35L748.59 409.12L733.87 404.71L717.92 405.77L707.79 415.11H550.92V348.58H491.87Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -2560,7 +2932,10 @@ var MAP_SVG_INNER = `<path d="M314.74 476.45L295.44 485.62L281.07 490.02L269.09 
       var info = getRadarInfo(city);
       var html = '';
       html += '<div class="weather">';
+      html += '<div class="radar-header-row">';
       html += '<div class="weather-city">' + city.toUpperCase() + ' RADAR</div>';
+      html += '<span class="radar-live-badge"><span class="radar-live-dot"></span><span>Live</span></span>';
+      html += '</div>';
       if (info) {
         var stationId = info.code.slice(0, 2);
         var imgUrl = "https://www.bom.gov.au/radar/IDR" + stationId + range + ".gif";
