@@ -625,9 +625,9 @@
       position: absolute;
       transform: translate(-50%, -50%);
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       align-items: center;
-      gap: 3px;
+      gap: 5px;
       cursor: default;
       user-select: none;
     }
@@ -649,23 +649,35 @@
       font-weight: 700;
       letter-spacing: 0.5px;
       color: #ffffff;
-      background-color: rgba(0, 0, 0, 0.65);
-      padding: 2px 5px;
+      background-color: transparent;
+      padding: 0;
       white-space: nowrap;
       text-transform: uppercase;
+      text-shadow:
+        -1.5px -1.5px 0 #000,
+        1.5px -1.5px 0 #000,
+        -1.5px 1.5px 0 #000,
+        1.5px 1.5px 0 #000,
+        -1.5px 0 0 #000,
+        1.5px 0 0 #000,
+        0 -1.5px 0 #000,
+        0 1.5px 0 #000;
     }
 
     .city-marker-temps {
       display: flex;
-      gap: 2px;
+      gap: 0;
     }
 
     .city-marker-temps .temp-box {
       font-size: 10px;
       font-weight: 700;
-      padding: 1px 5px;
+      width: 30px;
+      padding: 1px 0;
       color: #000000;
       white-space: nowrap;
+      text-align: center;
+      box-sizing: border-box;
     }
 
     .temp-box.temp-max {
@@ -2007,6 +2019,7 @@ var MAP_SVG_INNER = `<path d="M314.74 476.45L295.44 485.62L281.07 490.02L269.09 
     var mapWeatherCacheTime = 0;
     var MAP_CACHE_TTL = 10 * 60 * 1000;
     var draggedMapCity = null;
+    var mobileMapCities = ["Adelaide", "Darwin", "Perth", "Melbourne", "Sydney", "Hobart", "Brisbane", "Cairns"];
 
     function getLocalMapPositions() {
       try {
@@ -2092,7 +2105,13 @@ var MAP_SVG_INNER = `<path d="M314.74 476.45L295.44 485.62L281.07 490.02L269.09 
     function renderMapMarkers(markersEl) {
       var isAdmin = currentUser === "JT";
       var html = "";
-      Object.keys(mapCityPositions).forEach(function (city) {
+      var citiesToShow = Object.keys(mapCityPositions);
+      if (isMobile()) {
+        citiesToShow = citiesToShow.filter(function (city) {
+          return mobileMapCities.indexOf(city) !== -1;
+        });
+      }
+      citiesToShow.forEach(function (city) {
         var pos = mapCityPositions[city];
         var w = mapWeatherCache[city];
         var maxLabel = (w && w.max !== null && w.max !== undefined) ? (w.max + "&deg;") : "&hellip;";
