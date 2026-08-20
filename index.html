@@ -586,6 +586,127 @@
       color: #000000;
     }
 
+    /* Map view */
+    .map-view {
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .map-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 800 / 775;
+      background-color: transparent;
+      border: none;
+      margin-top: 24px;
+      overflow: visible;
+    }
+
+    .map-svg-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .map-svg-bg path {
+      stroke: #ffffff;
+      stroke-width: 2.5;
+      fill: none;
+    }
+
+    .map-markers {
+      position: absolute;
+      inset: 0;
+    }
+
+    .city-marker {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: default;
+      user-select: none;
+    }
+
+    .city-marker.admin-drag {
+      cursor: grab;
+    }
+
+    .city-marker.admin-drag:active {
+      cursor: grabbing;
+    }
+
+    .city-marker.dragging {
+      opacity: 0.35;
+    }
+
+    .city-marker-name {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+      background-color: rgba(0, 0, 0, 0.65);
+      padding: 2px 5px;
+      white-space: nowrap;
+      text-transform: uppercase;
+    }
+
+    .city-marker-temps {
+      display: flex;
+      gap: 2px;
+    }
+
+    .city-marker-temps .temp-box {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 5px;
+      color: #000000;
+      white-space: nowrap;
+    }
+
+    .temp-box.temp-max {
+      background-color: #fff09a;
+    }
+
+    .temp-box.temp-min {
+      background-color: #a7c7f7;
+    }
+
+    .map-hint {
+      margin-top: 16px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: #777777;
+      text-transform: uppercase;
+    }
+
+    .map-unplaced-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .map-unplaced-chip {
+      font-size: 12px;
+      letter-spacing: 1px;
+      padding: 6px 12px;
+      background-color: #222222;
+      border: 1px dashed #777777;
+      color: #ffffff;
+      cursor: grab;
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    .map-unplaced-chip:active {
+      cursor: grabbing;
+    }
+
     /* Auth buttons (top right) */
     .auth-bar {
       position: absolute;
@@ -1224,6 +1345,7 @@
     <div class="auth-bar" id="authBar">
       <button class="auth-btn" id="feedBarBtn" style="display:none;" title="Feed"><span>Feed</span></button>
       <button class="auth-btn" id="postBarBtn" style="display:none;" title="New Post"><span>Post</span></button>
+      <button class="auth-btn" id="mapBarBtn" title="Map"><span>Map</span></button>
       <button class="auth-btn" id="searchBarBtn" title="Search Users"><span>Search</span></button>
       <button class="auth-btn" id="leaderboardBarBtn" title="Leaderboard"><span>Leaderboard</span></button>
       <button class="auth-btn" id="guessToggleBtn" style="display:none;" title="Guessing Mode"><span>G</span></button>
@@ -1871,6 +1993,217 @@
         });
     }
 
+var MAP_SVG_INNER = `<path d="M314.74 476.45L295.44 485.62L281.07 490.02L269.09 490.99L259.39 489.05L230.31 504.74L218.68 509.85L215.42 520.34L207.04 529.15L197.61 527.3L188.01 529.59L177.34 526.42L163.86 526.24L137.69 528.8L129.23 534L123.23 542.72L116.62 541.23L105.87 552.24L91.24 555.94L68.07 554.44L58.46 550.39L53.96 543.43L38.72 532.76L38.37 523.07L47.27 521.48L52.38 513.73L53.96 498.48L52.64 475.48L42.86 456.62L38.1 438.47L38.9 426.92L29.99 404.36L22.86 395.11L19.86 377.48L11.49 363.38L24.79 345.49L13.51 329.01L7.60999 314.03L8.04999 306.19L14.66 294.64L15.72 281.51L12.63 274.64L18.54 261.33L23.12 273.49L26.91 272.26L32.11 259.3L48.24 252.08L62.78 237.98L72.74 234.01L85.6 235.51L94.94 233.22L100.94 227.75L114.69 225.73L121.74 219.29L129.14 221.67L156.46 212.51L163.51 206.69L170.12 194.88L183.43 181.66L179.99 165.01L182.28 159.98L195.94 149.32L204.31 164.48L209.25 161.48L211.1 142.71L224.49 144.3L227.84 137.16L224.23 127.99L229.43 122.09L241.68 116.1L238.86 111.42L257.1 101.29L266.88 100.41L274.46 91.07L283.63 95.47L298.52 110.81L314.74 114.33V476.45Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M314.74 348.58V114.33H315L315.79 114.51L316.76 115.04L318.17 116.27L324.17 115.65L327.96 111.95L321.79 104.99L331.83 86.4L337.12 85.78L337.03 75.2L349.63 65.69L354.31 59.43L363.38 62.25L374.93 62.43L384.89 58.11L383.56 45.77L391.76 42.86L397.14 50.62L434.68 61.54L444.64 55.38L449.57 55.9L458.12 64.63L461.38 55.11L470.81 63.84L462.17 73.44L461.91 81.02L452.04 81.11L449.48 88.6L450.63 99.44L440.49 111.16L441.64 115.3L456.62 125.08L467.64 135.4L472.04 134.6L486.85 142.53L491.87 148.53V348.58H314.74ZM364.7 44.45L353.78 54.76L344.26 49.21L348.05 44.62L359.51 39.95L364.7 44.45Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M314.74 476.45V348.58H550.92V531L550.3 530.3V629.44L539.02 625.83L526.16 607.59L528.45 594.1L520.96 576.12L512.58 569.25L504.48 568.1L500.33 562.99L501.57 549.42L493.81 534L485.44 558.85L480.95 552.51L482.71 530.91L490.64 519.37L492.4 510.47L489.93 502.01L481.12 510.29L476.63 522.37L459.79 532.32L446.22 553.3L439.97 546.95L436.62 528.01L429.92 522.01L429.21 515.32L418.64 510.82L414.59 500.25L416.08 494.25L409.74 489.32L397.31 487.91L389.47 482.62L377.66 484.03L357.65 471.6L349.99 474.6L337.56 473.81L314.74 476.45ZM494.43 574.19L481.21 580.62L466.58 580.18L464.73 572.6L479.09 568.55L494.43 574.19Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M491.87 348.58V148.53L493.11 149.94L495.49 151.7L512.32 156.19L516.99 165.09L531.27 172.5L547.66 167.21L554.89 151.79L560.53 126.76L564.05 117.24L561.14 106.49L561.32 87.98L564.58 81.46L564.05 65.16L569.51 55.11L574.01 34.75L579.38 30.43L585.2 35.72L587.76 53.26L594.28 55.9L591.99 63.04L598.86 68.59L600.71 91.6L605.03 103.58L609 106.75L618.78 101.64L623.27 107.99L635.08 115.92L634.99 127.9L637.81 144.3L650.77 166.24L649.8 184.04L655.97 189.51L658.44 200.87L671.65 207.92L677.82 207.57L682.49 216.56L694.13 219.47L705.41 227.49L701.79 232.51L712.9 243.09L717.66 260.89L722.24 270.5L732.29 270.76L744.36 277.55L744.1 292.44L756.08 304.6L766.13 309.8L770.36 318.53L776.62 322.49L785.25 341.97L790.63 347.34L788.6 354.75L790.54 378.98L795.83 388.5L795.3 390.7L795.92 394.32L796.53 395.2L797.06 396.08L794.59 398.02L790.89 398.55L789.04 400.66L777.06 398.55L766.83 404.63L767.89 412.47L753.35 413.35L748.59 409.12L733.87 404.71L717.92 405.77L707.79 415.11H550.92V348.58H491.87Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M550.92 531V415.11H707.79L717.92 405.77L733.87 404.71L748.59 409.12L753.35 413.35L767.89 412.47L766.83 404.63L777.06 398.55L789.04 400.66L790.89 398.55L794.59 398.02L797.06 396.08L798.12 396.61L799 412.12L796 415.91L791.07 440.67L786.84 454.51L788.87 458.38L785.78 471.69L777.41 487.38L777.67 493.64L763.48 504.48L754.41 521.48L753 530.12L746.21 538.41L741.89 557.35L738.9 559.64L731.23 577.18L726.12 601.33L727.44 615.69L692.98 598.24L688.58 580.09L683.38 577.27L667.6 581.41L644.25 577.8L640.9 574.8L629.18 575.86L624.51 581.94L616.93 573.22L597.8 557.97L597.36 549.77L585.91 544.49L581.59 549.07L575.24 535.14L562.38 535.41L556.03 532.59L550.92 531Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M550.3 629.44V530.3L551.8 532.06L556.03 532.59L562.38 535.41L575.24 535.14L581.59 549.07L585.91 544.49L597.36 549.77L597.8 557.97L616.93 573.22L624.51 581.94L629.18 575.86L640.9 574.8L644.25 577.8L667.6 581.41L683.38 577.27L688.58 580.09L692.98 598.24L727.44 615.69L717.75 622.57L694.74 623.54L680.56 629.97L666.63 644.07L645.83 645.92L637.9 640.81L639.05 634.02L632.17 631.12L628.91 624.95L617.9 635.43L600.45 649.27L578.42 637.11L569.51 634.99L561.58 638.78L550.3 629.44Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M688.66 763.66L684.61 764.01L680.91 752.73L676.06 755.02L674.03 764.28L667.6 773.97L654.47 770.71L639.66 756.35L634.82 746.56L633.67 729.82L627.94 722.5L621.86 704.35L623.54 696.77L643.98 702.85L657.64 708.76L689.28 697.83L695.19 704.53L693.78 725.41L687.43 746.48L688.66 763.66Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M715.28 563.08L703.91 570.4L704.97 562.02L710.34 557.97L715.28 563.08Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+    var mapCityPositions = {};
+    var mapWeatherCache = {};
+    var mapWeatherCacheTime = 0;
+    var MAP_CACHE_TTL = 10 * 60 * 1000;
+    var draggedMapCity = null;
+
+    function getLocalMapPositions() {
+      try {
+        var raw = localStorage.getItem("map_positions");
+        if (raw) return JSON.parse(raw);
+      } catch (e) { }
+      return {};
+    }
+
+    function saveLocalMapPositions(positions) {
+      try {
+        localStorage.setItem("map_positions", JSON.stringify(positions));
+      } catch (e) { }
+    }
+
+    function loadMapPositions() {
+      return fetch(AUTH_API_BASE + "/map-positions", {
+        method: "GET",
+        credentials: "include"
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error("no endpoint");
+          return res.json();
+        })
+        .then(function (data) {
+          mapCityPositions = data.positions || {};
+          saveLocalMapPositions(mapCityPositions);
+          return mapCityPositions;
+        })
+        .catch(function () {
+          mapCityPositions = getLocalMapPositions();
+          return mapCityPositions;
+        });
+    }
+
+    function saveMapPosition(city, xPct, yPct) {
+      mapCityPositions[city] = { x: xPct, y: yPct };
+      saveLocalMapPositions(mapCityPositions);
+      fetch(AUTH_API_BASE + "/map-positions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ city: city, x: xPct, y: yPct })
+      }).catch(function () { });
+    }
+
+    function fetchCityMinMax(city) {
+      var searchUrl = "https://api.weather.bom.gov.au/v1/locations?search=" + encodeURIComponent(city);
+      return fetch(searchUrl)
+        .then(function (res) { return res.json(); })
+        .then(function (searchJson) {
+          var geohash = searchJson.data[0].geohash.slice(0, 6);
+          return fetch("https://api.weather.bom.gov.au/v1/locations/" + geohash + "/forecasts/daily")
+            .then(function (res) { return res.json(); });
+        })
+        .then(function (dailyJson) {
+          var today = dailyJson.data[0];
+          var min = (today && today.temp_min !== null && today.temp_min !== undefined) ? Math.round(today.temp_min) : null;
+          var max = (today && today.temp_max !== null && today.temp_max !== undefined) ? Math.round(today.temp_max) : null;
+          return { min: min, max: max };
+        })
+        .catch(function () {
+          return { min: null, max: null };
+        });
+    }
+
+    function fetchAllCityMinMax() {
+      var now = Date.now();
+      if (mapWeatherCacheTime && (now - mapWeatherCacheTime) < MAP_CACHE_TTL) {
+        return Promise.resolve(mapWeatherCache);
+      }
+      var promises = allCities.map(function (city) {
+        return fetchCityMinMax(city).then(function (result) {
+          mapWeatherCache[city] = result;
+        });
+      });
+      return Promise.all(promises).then(function () {
+        mapWeatherCacheTime = Date.now();
+        return mapWeatherCache;
+      });
+    }
+
+    function renderMapMarkers(markersEl) {
+      var isAdmin = currentUser === "JT";
+      var html = "";
+      Object.keys(mapCityPositions).forEach(function (city) {
+        var pos = mapCityPositions[city];
+        var w = mapWeatherCache[city];
+        var maxLabel = (w && w.max !== null && w.max !== undefined) ? (w.max + "&deg;") : "&hellip;";
+        var minLabel = (w && w.min !== null && w.min !== undefined) ? (w.min + "&deg;") : "&hellip;";
+        html += '<div class="city-marker' + (isAdmin ? ' admin-drag' : '') + '" data-city="' + city + '" draggable="' + (isAdmin ? 'true' : 'false') + '" style="left:' + pos.x + '%; top:' + pos.y + '%;">';
+        html += '<div class="city-marker-name">' + city.toUpperCase() + '</div>';
+        html += '<div class="city-marker-temps">';
+        html += '<span class="temp-box temp-max">' + maxLabel + '</span>';
+        html += '<span class="temp-box temp-min">' + minLabel + '</span>';
+        html += '</div>';
+        html += '</div>';
+      });
+      markersEl.innerHTML = html;
+
+      if (isAdmin) {
+        markersEl.querySelectorAll(".city-marker").forEach(function (marker) {
+          marker.addEventListener("dragstart", function (e) {
+            draggedMapCity = marker.getAttribute("data-city");
+            marker.classList.add("dragging");
+            e.dataTransfer.effectAllowed = "move";
+          });
+          marker.addEventListener("dragend", function () {
+            marker.classList.remove("dragging");
+            draggedMapCity = null;
+          });
+        });
+      }
+    }
+
+    function renderUnplacedChips() {
+      var row = document.getElementById("mapUnplacedRow");
+      if (!row) return;
+      var unplaced = allCities.filter(function (city) {
+        return !mapCityPositions[city];
+      });
+      if (unplaced.length === 0) {
+        row.innerHTML = '<div class="weather-placeholder">ALL CITIES PLACED</div>';
+        return;
+      }
+      var html = "";
+      unplaced.forEach(function (city) {
+        html += '<div class="map-unplaced-chip" draggable="true" data-city="' + city + '">' + city + '</div>';
+      });
+      row.innerHTML = html;
+
+      row.querySelectorAll(".map-unplaced-chip").forEach(function (chip) {
+        chip.addEventListener("dragstart", function (e) {
+          draggedMapCity = chip.getAttribute("data-city");
+          e.dataTransfer.effectAllowed = "move";
+        });
+      });
+    }
+
+    function setupMapDropZone(containerEl, markersEl) {
+      containerEl.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+      });
+
+      containerEl.addEventListener("drop", function (e) {
+        e.preventDefault();
+        if (!draggedMapCity) return;
+        var rect = containerEl.getBoundingClientRect();
+        var xPct = ((e.clientX - rect.left) / rect.width) * 100;
+        var yPct = ((e.clientY - rect.top) / rect.height) * 100;
+        xPct = Math.max(0, Math.min(100, Math.round(xPct * 10) / 10));
+        yPct = Math.max(0, Math.min(100, Math.round(yPct * 10) / 10));
+
+        saveMapPosition(draggedMapCity, xPct, yPct);
+        draggedMapCity = null;
+
+        renderMapMarkers(markersEl);
+        renderUnplacedChips();
+      });
+    }
+
+    function renderMapView() {
+      window.currentActiveCity = '';
+      var isAdmin = currentUser === "JT";
+
+      var html = '';
+      html += '<div class="map-view">';
+      html += '<div class="weather-city">MAP</div>';
+      html += '<div class="map-container" id="mapContainer">';
+      html += '<svg class="map-svg-bg" viewBox="0 0 800 775" xmlns="http://www.w3.org/2000/svg">' + MAP_SVG_INNER + '</svg>';
+      html += '<div class="map-markers" id="mapMarkers"></div>';
+      html += '</div>';
+      if (isAdmin) {
+        html += '<div class="map-hint">Drag a city onto the map to place it &mdash; drag placed cities to reposition</div>';
+        html += '<div class="map-unplaced-row" id="mapUnplacedRow"></div>';
+      }
+      html += '<button class="change-btn" style="display:inline-block; margin-top:24px;" onclick="exitMobileWeatherView()"><span>Back</span></button>';
+      html += '</div>';
+      preview.innerHTML = html;
+
+      var markersEl = document.getElementById("mapMarkers");
+      var containerEl = document.getElementById("mapContainer");
+
+      loadMapPositions().then(function () {
+        renderMapMarkers(markersEl);
+        if (isAdmin) {
+          renderUnplacedChips();
+          setupMapDropZone(containerEl, markersEl);
+        }
+        fetchAllCityMinMax().then(function () {
+          renderMapMarkers(markersEl);
+        });
+      });
+    }
+
+
     function renderError(city) {
       window.currentActiveCity = city;
       var html = '';
@@ -2419,6 +2752,7 @@
     var registerBtn = document.getElementById("registerBtn");
     var guessToggleBtn = document.getElementById("guessToggleBtn");
     var leaderboardBarBtn = document.getElementById("leaderboardBarBtn");
+    var mapBarBtn = document.getElementById("mapBarBtn");
     var searchBarBtn = document.getElementById("searchBarBtn");
     var feedBarBtn = document.getElementById("feedBarBtn");
     var postBarBtn = document.getElementById("postBarBtn");
@@ -2485,6 +2819,13 @@
 
     leaderboardBarBtn.addEventListener("click", function () {
       fetchLeaderboard();
+      if (isMobile()) {
+        enterMobileWeatherView();
+      }
+    });
+
+    mapBarBtn.addEventListener("click", function () {
+      renderMapView();
       if (isMobile()) {
         enterMobileWeatherView();
       }
