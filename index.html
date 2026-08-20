@@ -510,12 +510,64 @@
       line-height: 1.5;
     }
 
+    /* Radar image wrapper + rotating sweep beam */
+    .radar-image-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      margin-top: 24px;
+      border: 1px solid #333333;
+      overflow: hidden;
+      animation: radarWrapperReveal 0.5s ease;
+    }
+
+    .radar-image-wrapper .radar-image {
+      margin-top: 0;
+      border: none;
+      display: block;
+    }
+
     .radar-image {
       width: 100%;
       max-width: 420px;
       display: block;
       margin-top: 24px;
       border: 1px solid #333333;
+    }
+
+    .radar-sweep-beam {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: conic-gradient(from 0deg,
+          rgba(255, 46, 196, 0) 0deg,
+          rgba(255, 46, 196, 0.55) 18deg,
+          rgba(255, 46, 196, 0) 60deg);
+      mix-blend-mode: screen;
+      animation: radarSweepSpin 3.2s linear infinite;
+      z-index: 2;
+    }
+
+    @keyframes radarSweepSpin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes radarWrapperReveal {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .radar-note {
@@ -546,17 +598,43 @@
       border: 1px solid #333333;
       padding: 8px 14px;
       cursor: pointer;
-      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      z-index: 0;
+      transition: border-color 0.2s ease;
+    }
+
+    .radar-range-btn span {
+      position: relative;
+      z-index: 2;
+    }
+
+    .radar-range-btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background-color: #ff2ec4;
+      z-index: 1;
+      transition: left 0.35s ease;
     }
 
     .radar-range-btn:hover {
       border-color: #ff2ec4;
     }
 
-    .radar-range-btn.active {
-      background-color: #ff2ec4;
-      border-color: #ff2ec4;
+    .radar-range-btn:hover::before,
+    .radar-range-btn.active::before {
+      left: 0;
+    }
+
+    .radar-range-btn:hover span,
+    .radar-range-btn.active span {
       color: #000000;
+    }
+
+    .radar-range-btn.active {
+      border-color: #ff2ec4;
     }
 
     .weather-placeholder {
@@ -2486,7 +2564,10 @@ var MAP_SVG_INNER = `<path d="M314.74 476.45L295.44 485.62L281.07 490.02L269.09 
       if (info) {
         var stationId = info.code.slice(0, 2);
         var imgUrl = "https://www.bom.gov.au/radar/IDR" + stationId + range + ".gif";
-        html += '<img class="radar-image" src="' + imgUrl + '" alt="' + city + ' rain radar loop" id="radarImg" onerror="this.style.display=\'none\'; document.getElementById(\'radarErrorNote\').style.display=\'block\';">';
+        html += '<div class="radar-image-wrapper" id="radarImageWrapper">';
+        html += '<img class="radar-image" src="' + imgUrl + '" alt="' + city + ' rain radar loop" id="radarImg" onerror="document.getElementById(\'radarImageWrapper\').style.display=\'none\'; document.getElementById(\'radarErrorNote\').style.display=\'block\';">';
+        html += '<div class="radar-sweep-beam"></div>';
+        html += '</div>';
         html += '<div class="radar-note" id="radarErrorNote" style="display:none;">Radar image unavailable right now &mdash; try again shortly.</div>';
         html += '<div class="radar-range-row">';
         ["4", "3", "2"].forEach(function (r) {
